@@ -9,8 +9,21 @@ public class Boundary
 
 public class PlayerController : MonoBehaviour
 {
+  public float speed, tilt, fireRate;
   public Boundary boundary;
-  public float speed, tilt;
+  public GameObject shot;
+  public Transform shotSpawn;
+
+  private float lastShotTime;
+
+  void Update()
+  {
+    if (Input.GetButton("Fire1") && Time.time > lastShotTime + fireRate)
+    {
+      Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+      lastShotTime = Time.time;
+    }
+  }
 
   void FixedUpdate()
   {
