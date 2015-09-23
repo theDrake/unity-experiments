@@ -4,12 +4,23 @@ using System.Collections;
 public class DestroyByContact : MonoBehaviour
 {
   public GameObject explosion, playerExplosion;
+  public int scoreValue;
 
+  private GameController gameController;
   private Transform thisTransform, otherTransform;
 
   void Start()
   {
     thisTransform = GetComponent<Transform>();
+    GameObject gameControllerObject = GameObject.FindWithTag("GameController");
+    if (gameControllerObject)
+    {
+      gameController = gameControllerObject.GetComponent<GameController>();
+    }
+    if (!gameController)
+    {
+      Debug.Log("Cannot find 'GameController' script");
+    }
   }
 
   void OnTriggerEnter(Collider other)
@@ -26,5 +37,6 @@ public class DestroyByContact : MonoBehaviour
                   otherTransform.position,
                   otherTransform.rotation);
     }
+    gameController.AddToScore(scoreValue);
   }
 }
