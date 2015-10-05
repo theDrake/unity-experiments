@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [System.Serializable]
 public class Boundary
@@ -13,15 +12,16 @@ public class PlayerController : MonoBehaviour
   public Boundary boundary;
   public GameObject shot;
   public Transform shotSpawn;
+  public Touchpad touchpad;
 
   private float lastShotTime;
   private Rigidbody rb;
-  private Quaternion calibrationQuaternion;
+  //private Quaternion calibrationQuaternion;
 
   void Start()
   {
     rb = GetComponent<Rigidbody>();
-    CalibrateAccelerometer();
+    //CalibrateAccelerometer();
   }
 
   void Update()
@@ -36,12 +36,18 @@ public class PlayerController : MonoBehaviour
 
   void FixedUpdate()
   {
+    // Keyboard controls:
     //float moveHorizontal = Input.GetAxis("Horizontal");
     //float moveVertical = Input.GetAxis("Vertical");
     //Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
-    Vector3 acceleration = calibrationQuaternion * Input.acceleration;
-    Vector3 movement = new Vector3(acceleration.x, 0.0f, acceleration.y);
+    // Accelerometer controls:
+    //Vector3 acceleration = calibrationQuaternion * Input.acceleration;
+    //Vector3 movement = new Vector3(acceleration.x, 0.0f, acceleration.y);
+
+    Vector2 direction = touchpad.GetDirection();
+    Vector3 movement = new Vector3(direction.x, 0.0f, direction.y);
+
     rb.velocity = movement * speed;
     rb.position = new Vector3
       (
@@ -57,11 +63,11 @@ public class PlayerController : MonoBehaviour
       );
   }
 
-  void CalibrateAccelerometer()
-  {
-    Vector3 accelerationSnapshot = Input.acceleration;
-    Quaternion rotateQuaternion = Quaternion.FromToRotation(new Vector3(0.0f, 0.0f, -1.0f),
-                                                            accelerationSnapshot);
-    calibrationQuaternion = Quaternion.Inverse(rotateQuaternion);
-  }
+  //void CalibrateAccelerometer()
+  //{
+  //  Vector3 accelerationSnapshot = Input.acceleration;
+  //  Quaternion rotateQuaternion = Quaternion.FromToRotation(new Vector3(0.0f, 0.0f, -1.0f),
+  //                                                          accelerationSnapshot);
+  //  calibrationQuaternion = Quaternion.Inverse(rotateQuaternion);
+  //}
 }
