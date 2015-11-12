@@ -11,10 +11,17 @@ public class PlayerController : MonoBehaviour {
   }
 
   void FixedUpdate() {
-    float moveHorizontal = Input.GetAxis("Horizontal");
-    float moveVertical = Input.GetAxis("Vertical");
+    float moveHorizontal = Input.GetAxis("Horizontal"),
+          moveVertical = Input.GetAxis("Vertical");
     Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
     rb.AddForce(movement * speed);
+  }
+
+  void OnTriggerEnter(Collider other) {
+    //Destroy(other.gameObject);
+    if (other.gameObject.CompareTag("Powerup")) {
+      other.gameObject.SetActive(false);
+    }
   }
 }
