@@ -1,13 +1,19 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
-  public float speed;
 
+  public float speed;
+  public Text scoreText;
+
+  private int score;
   private Rigidbody rb;
 
   void Start() {
     rb = GetComponent<Rigidbody>();
+    score = 0;
+    UpdateScoreText();
   }
 
   void FixedUpdate() {
@@ -22,6 +28,12 @@ public class PlayerController : MonoBehaviour {
     //Destroy(other.gameObject);
     if (other.gameObject.CompareTag("Powerup")) {
       other.gameObject.SetActive(false);
+      score += 10;
+      UpdateScoreText();
     }
+  }
+
+  void UpdateScoreText() {
+    scoreText.text = "Score: " + score.ToString();
   }
 }
