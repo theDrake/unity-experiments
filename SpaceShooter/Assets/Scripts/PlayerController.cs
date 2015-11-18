@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public class Boundary
-{
+public class Boundary {
   public float xMin, xMax, zMin, zMax;
 }
 
-public class PlayerController : MonoBehaviour
-{
+public class PlayerController : MonoBehaviour {
+
   public float speed, tilt, fireRate;
   public Boundary boundary;
   public GameObject shot;
@@ -18,24 +17,20 @@ public class PlayerController : MonoBehaviour
   private Rigidbody rb;
   //private Quaternion calibrationQuaternion;
 
-  void Start()
-  {
+  void Start() {
     rb = GetComponent<Rigidbody>();
     //CalibrateAccelerometer();
   }
 
-  void Update()
-  {
-    if (Input.GetButton("Fire1") && Time.time > lastShotTime + fireRate)
-    {
+  void Update() {
+    if (Input.GetButton("Fire1") && Time.time > lastShotTime + fireRate) {
       Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
       GetComponent<AudioSource>().Play();
       lastShotTime = Time.time;
     }
   }
 
-  void FixedUpdate()
-  {
+  void FixedUpdate() {
     // Keyboard controls:
     //float moveHorizontal = Input.GetAxis("Horizontal");
     //float moveVertical = Input.GetAxis("Vertical");
@@ -63,11 +58,12 @@ public class PlayerController : MonoBehaviour
       );
   }
 
-  //void CalibrateAccelerometer()
-  //{
+  //void CalibrateAccelerometer() {
   //  Vector3 accelerationSnapshot = Input.acceleration;
-  //  Quaternion rotateQuaternion = Quaternion.FromToRotation(new Vector3(0.0f, 0.0f, -1.0f),
-  //                                                          accelerationSnapshot);
+  //  Quaternion rotateQuaternion = Quaternion.FromToRotation(new Vector3(0.0f,
+  //                                                                    0.0f,
+  //                                                                    -1.0f),
+  //                                                     accelerationSnapshot);
   //  calibrationQuaternion = Quaternion.Inverse(rotateQuaternion);
   //}
 }
