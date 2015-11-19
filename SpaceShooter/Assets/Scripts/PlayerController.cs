@@ -32,14 +32,15 @@ public class PlayerController : MonoBehaviour {
 
   void FixedUpdate() {
     // Keyboard controls:
-    //float moveHorizontal = Input.GetAxis("Horizontal");
-    //float moveVertical = Input.GetAxis("Vertical");
+    //float moveHorizontal = Input.GetAxis("Horizontal"),
+    //      moveVertical = Input.GetAxis("Vertical");
     //Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
     // Accelerometer controls:
     //Vector3 acceleration = calibrationQuaternion * Input.acceleration;
     //Vector3 movement = new Vector3(acceleration.x, 0.0f, acceleration.y);
 
+    // Touchpad controls:
     Vector2 direction = touchpad.GetDirection();
     Vector3 movement = new Vector3(direction.x, 0.0f, direction.y);
 
