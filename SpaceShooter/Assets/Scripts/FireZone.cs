@@ -2,14 +2,13 @@
 using UnityEngine.EventSystems;
 
 public class FireZone : MonoBehaviour, IPointerDownHandler, IPointerUpHandler {
-  
   private bool touched, canFire;
   private int pointerID;
 
   void Awake() {
     touched = false;
   }
-  
+
   public void OnPointerDown(PointerEventData data) {
     if (!touched) {
       touched = canFire = true;

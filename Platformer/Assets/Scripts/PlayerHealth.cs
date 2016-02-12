@@ -1,108 +1,65 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerHealth : MonoBehaviour
-{	
-	public float health = 100f;					// The player's health.
-	public float repeatDamagePeriod = 2f;		// How frequently the player can be damaged.
-	public AudioClip[] ouchClips;				// Array of clips to play when the player is damaged.
-	public float hurtForce = 10f;				// The force with which the player is pushed when hurt.
-	public float damageAmount = 10f;			// The amount of damage to take when enemies touch the player
+public class PlayerHealth : MonoBehaviour {
+  public float health = 100f;  // The player's health.
+  public float repeatDamagePeriod = 2f;  // How frequently player can be hurt.
+  public AudioClip[] ouchClips;  // Clips to play when player is hurt.
+  public float hurtForce = 10f;  // Force to push player when hurt.
+  public float damageAmount = 10f;  // When enemies touch the player.
 
-	private SpriteRenderer healthBar;			// Reference to the sprite renderer of the health bar.
-	private float lastHitTime;					// The time at which the player was last hit.
-	private Vector3 healthScale;				// The local scale of the health bar initially (with full health).
-	private PlayerControl playerControl;		// Reference to the PlayerControl script.
-	private Animator anim;						// Reference to the Animator on the player
+  private SpriteRenderer healthBar;  // Reference to health sprite renderer.
+  private float lastHitTime;  // Time at which player was last hit.
+  private Vector3 healthScale;  // Local scale of initial health bar.
+  private PlayerControl playerControl;  // Reference to PlayerControl script.
+  private Animator anim;  // Reference to the Animator on the player.
 
+  void Awake() {
+    playerControl = GetComponent<PlayerControl>();
+    healthBar = GameObject.Find("HealthBar").GetComponent<SpriteRenderer>();
+    anim = GetComponent<Animator>();
 
-	void Awake ()
-	{
-		// Setting up references.
-		playerControl = GetComponent<PlayerControl>();
-		healthBar = GameObject.Find("HealthBar").GetComponent<SpriteRenderer>();
-		anim = GetComponent<Animator>();
+    // Getting intial scale of healthbar (while player has full health).
+    healthScale = healthBar.transform.localScale;
+  }
 
-		// Getting the intial scale of the healthbar (whilst the player has full health).
-		healthScale = healthBar.transform.localScale;
-	}
+  void OnCollisionEnter2D(Collision2D col) {
+    if (col.gameObject.tag == "Enemy") {
+      if (Time.time > lastHitTime + repeatDamagePeriod) {
+        if (health > 0f) {
+          TakeDamage(col.transform);
+          lastHitTime = Time.time;
+        } else {
+          Collider2D[] cols = GetComponents<Collider2D>();
+          foreach (Collider2D c in cols) {
+            c.isTrigger = true;
+          }
+          SpriteRenderer[] spr = GetComponentsInChildren<SpriteRenderer>();
+          foreach (SpriteRenderer s in spr) {
+            s.sortingLayerName = "UI";
+          }
+          GetComponent<PlayerControl>().enabled = false;
+          GetComponentInChildren<Gun>().enabled = false;
+          anim.SetTrigger("Die");
+        }
+      }
+    }
+  }
 
+  void TakeDamage(Transform enemy) {
+    playerControl.jump = false;
+    Vector3 hurtVector = transform.position - enemy.position + Vector3.up * 5f;
+    GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
+    health -= damageAmount;
+    UpdateHealthBar();
+    int i = Random.Range(0, ouchClips.Length);
+    AudioSource.PlayClipAtPoint(ouchClips[i], transform.position);
+  }
 
-	void OnCollisionEnter2D (Collision2D col)
-	{
-		// If the colliding gameobject is an Enemy...
-		if(col.gameObject.tag == "Enemy")
-		{
-			// ... and if the time exceeds the time of the last hit plus the time between hits...
-			if (Time.time > lastHitTime + repeatDamagePeriod) 
-			{
-				// ... and if the player still has health...
-				if(health > 0f)
-				{
-					// ... take damage and reset the lastHitTime.
-					TakeDamage(col.transform); 
-					lastHitTime = Time.time; 
-				}
-				// If the player doesn't have health, do some stuff, let him fall into the river to reload the level.
-				else
-				{
-					// Find all of the colliders on the gameobject and set them all to be triggers.
-					Collider2D[] cols = GetComponents<Collider2D>();
-					foreach(Collider2D c in cols)
-					{
-						c.isTrigger = true;
-					}
-
-					// Move all sprite parts of the player to the front
-					SpriteRenderer[] spr = GetComponentsInChildren<SpriteRenderer>();
-					foreach(SpriteRenderer s in spr)
-					{
-						s.sortingLayerName = "UI";
-					}
-
-					// ... disable user Player Control script
-					GetComponent<PlayerControl>().enabled = false;
-
-					// ... disable the Gun script to stop a dead guy shooting a nonexistant bazooka
-					GetComponentInChildren<Gun>().enabled = false;
-
-					// ... Trigger the 'Die' animation state
-					anim.SetTrigger("Die");
-				}
-			}
-		}
-	}
-
-
-	void TakeDamage (Transform enemy)
-	{
-		// Make sure the player can't jump.
-		playerControl.jump = false;
-
-		// Create a vector that's from the enemy to the player with an upwards boost.
-		Vector3 hurtVector = transform.position - enemy.position + Vector3.up * 5f;
-
-		// Add a force to the player in the direction of the vector and multiply by the hurtForce.
-		GetComponent<Rigidbody2D>().AddForce(hurtVector * hurtForce);
-
-		// Reduce the player's health by 10.
-		health -= damageAmount;
-
-		// Update what the health bar looks like.
-		UpdateHealthBar();
-
-		// Play a random clip of the player getting hurt.
-		int i = Random.Range (0, ouchClips.Length);
-		AudioSource.PlayClipAtPoint(ouchClips[i], transform.position);
-	}
-
-
-	public void UpdateHealthBar ()
-	{
-		// Set the health bar's colour to proportion of the way between green and red based on the player's health.
-		healthBar.material.color = Color.Lerp(Color.green, Color.red, 1 - health * 0.01f);
-
-		// Set the scale of the health bar to be proportional to the player's health.
-		healthBar.transform.localScale = new Vector3(healthScale.x * health * 0.01f, 1, 1);
-	}
+  public void UpdateHealthBar() {
+    healthBar.material.color = Color.Lerp(Color.green, Color.red,
+                                          1 - health * 0.01f);
+    healthBar.transform.localScale =
+      new Vector3(healthScale.x * health * 0.01f, 1, 1);
+  }
 }

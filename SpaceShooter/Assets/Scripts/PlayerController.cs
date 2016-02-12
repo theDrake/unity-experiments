@@ -6,7 +6,6 @@ public class Boundary {
 }
 
 public class PlayerController : MonoBehaviour {
-
   public float speed, tilt, fireRate;
   public Boundary boundary;
   public GameObject shot;
@@ -51,18 +50,11 @@ public class PlayerController : MonoBehaviour {
     Vector3 movement = new Vector3(direction.x, 0.0f, direction.y);
 
     rb.velocity = movement * speed;
-    rb.position = new Vector3
-      (
+    rb.position = new Vector3(
         Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax),
         0.0f,
-        Mathf.Clamp(rb.position.z, boundary.zMin, boundary.zMax)
-      );
-    rb.rotation = Quaternion.Euler
-      (
-        0.0f,
-        0.0f,
-        rb.velocity.x * tilt
-      );
+        Mathf.Clamp(rb.position.z, boundary.zMin, boundary.zMax));
+    rb.rotation = Quaternion.Euler(0.0f, 0.0f, rb.velocity.x * tilt);
   }
 
   //void CalibrateAccelerometer() {

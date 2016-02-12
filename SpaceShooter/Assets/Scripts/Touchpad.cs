@@ -3,7 +3,6 @@ using UnityEngine.EventSystems;
 
 public class Touchpad : MonoBehaviour, IPointerDownHandler, IDragHandler,
     IPointerUpHandler {
-
   public float smoothing;
 
   private bool touched;

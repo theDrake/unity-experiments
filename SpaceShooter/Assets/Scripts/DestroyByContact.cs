@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
 public class DestroyByContact : MonoBehaviour {
-
   public GameObject explosion, playerExplosion;
   public int scoreValue;
 

@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
-
   public float speed;
   public Text scoreText;
 
@@ -20,7 +19,6 @@ public class PlayerController : MonoBehaviour {
     Vector3 movement = new Vector3(Input.GetAxis("Horizontal"),
                                    0.0f,
                                    Input.GetAxis("Vertical"));
-
     rb.AddForce(movement * speed);
   }
 

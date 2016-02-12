@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class GameController : MonoBehaviour {
-
   public int hazardCount;
   public float startWait, spawnWait, waveWait;
   public GameObject hazard, restartButton;
@@ -39,7 +38,7 @@ public class GameController : MonoBehaviour {
     score += value;
     UpdateScoreText();
   }
-  
+
   void UpdateScoreText() {
     scoreText.text = "Score: " + score;
   }
@@ -55,7 +54,7 @@ public class GameController : MonoBehaviour {
         Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x,
                                                          spawnValues.x),
                                             spawnValues.y,
-                                           spawnValues.z);
+                                            spawnValues.z);
         Quaternion spawnRotation = Quaternion.identity;
         Instantiate(hazard, spawnPosition, spawnRotation);
         yield return new WaitForSeconds(spawnWait);
