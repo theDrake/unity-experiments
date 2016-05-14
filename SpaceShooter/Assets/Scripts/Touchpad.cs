@@ -38,8 +38,7 @@ public class Touchpad : MonoBehaviour, IPointerDownHandler, IDragHandler,
   }
 
   public Vector2 GetDirection() {
-    smoothDirection = Vector2.MoveTowards(smoothDirection,
-                                          direction,
+    smoothDirection = Vector2.MoveTowards(smoothDirection, direction,
                                           smoothing);
 
     return smoothDirection;

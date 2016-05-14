@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour {
   //void CalibrateAccelerometer() {
   //  Vector3 accelerationSnapshot = Input.acceleration;
   //  Quaternion rotateQuaternion = Quaternion.FromToRotation(new Vector3(0.0f,
-  //                                                                    0.0f,
+  //                                                                      0.0f,
   //                                                                    -1.0f),
   //                                                     accelerationSnapshot);
   //  calibrationQuaternion = Quaternion.Inverse(rotateQuaternion);

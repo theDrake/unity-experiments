@@ -5,7 +5,8 @@ using System.Collections;
 public class GameController : MonoBehaviour {
   public int hazardCount;
   public float startWait, spawnWait, waveWait;
-  public GameObject hazard, restartButton;
+  public GameObject[] hazards;
+  public GameObject restartButton;
   public Vector3 spawnValues;
   public GUIText scoreText, restartText, gameOverText;
 
@@ -15,17 +16,18 @@ public class GameController : MonoBehaviour {
   void Start() {
     score = 0;
     gameOver = false;
-    restartText.text = gameOverText.text = "";
+    restartText.text = "";
+    gameOverText.text = "";
     restartButton.SetActive(false);
     UpdateScoreText();
     StartCoroutine(SpawnWaves());
   }
 
-  void Update() {
-    if (gameOver && Input.GetKeyDown(KeyCode.R)) {
-      RestartGame();
-    }
-  }
+  //void Update() {
+  //  if (gameOver && Input.GetKeyDown(KeyCode.R)) {
+  //    RestartGame();
+  //  }
+  //}
 
   public void GameOver() {
     gameOver = true;
@@ -51,6 +53,7 @@ public class GameController : MonoBehaviour {
     yield return new WaitForSeconds(startWait);
     while (!gameOver) {
       for (int i = 0; i < hazardCount && !gameOver; i++) {
+        GameObject hazard = hazards[Random.Range(0, hazards.Length)];
         Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x,
                                                          spawnValues.x),
                                             spawnValues.y,

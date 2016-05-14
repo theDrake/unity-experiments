@@ -11,14 +11,16 @@ public class FireZone : MonoBehaviour, IPointerDownHandler, IPointerUpHandler {
 
   public void OnPointerDown(PointerEventData data) {
     if (!touched) {
-      touched = canFire = true;
+      touched = true;
+      canFire = true;
       pointerID = data.pointerId;
     }
   }
 
   public void OnPointerUp(PointerEventData data) {
     if (data.pointerId == pointerID) {
-      touched = canFire = false;
+      touched = false;
+      canFire = false;
     }
   }
 
