@@ -23,11 +23,11 @@ public class PlayerController : MonoBehaviour {
   }
 
   void Update() {
-    /*if (Input.GetButton("Fire1") && Time.time > lastShotTime + fireRate) {
-      Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
-      GetComponent<AudioSource>().Play();
-      lastShotTime = Time.time;
-    }*/
+    //if (Input.GetButton("Fire1") && Time.time > lastShotTime + fireRate) {
+    //  Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+    //  GetComponent<AudioSource>().Play();
+    //  lastShotTime = Time.time;
+    //}
     if (fireZone.CanFire() && Time.time > lastShotTime + fireRate) {
       Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
       GetComponent<AudioSource>().Play();

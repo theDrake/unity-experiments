@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class GameController : MonoBehaviour {
@@ -46,7 +47,8 @@ public class GameController : MonoBehaviour {
   }
 
   public void RestartGame() {
-    Application.LoadLevel(Application.loadedLevel);
+    //Application.LoadLevel(Application.loadedLevel);
+    SceneManager.LoadScene("Main");
   }
 
   IEnumerator SpawnWaves() {
