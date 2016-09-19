@@ -1,7 +1,11 @@
 fileFormatVersion: 2
 guid: 361e1e5d552ad444fb688b5203c01caa
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: enemy1-tail
+    21300002: enemy1-body
+    21300004: enemy1-eye
+    21300006: enemy1-eyelid
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -44,11 +48,14 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: enemy1-tail
+    - serializedVersion: 2
+      name: enemy1-tail
       rect:
         serializedVersion: 2
         x: 0
@@ -59,7 +66,9 @@ TextureImporter:
       pivot: {x: 1, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: enemy1-body
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: enemy1-body
       rect:
         serializedVersion: 2
         x: 168
@@ -70,7 +79,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: enemy1-eye
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: enemy1-eye
       rect:
         serializedVersion: 2
         x: 517
@@ -81,7 +92,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: enemy1-eyelid
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: enemy1-eyelid
       rect:
         serializedVersion: 2
         x: 682
@@ -92,6 +105,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      tessellationDetail: -1
     outline: []
   spritePackingTag: characters
   userData: 

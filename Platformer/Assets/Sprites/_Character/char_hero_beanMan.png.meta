@@ -1,7 +1,17 @@
 fileFormatVersion: 2
 guid: e7d3a1e0e2fac4bd48b6734c2daf4fe1
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: rightFoot
+    21300002: leftFoot
+    21300004: body
+    21300006: tache
+    21300008: leftHand
+    21300010: hat
+    21300012: rightHand
+    21300014: bazooka
+    21300016: rightEye
+    21300018: leftEye
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -44,11 +54,14 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: rightFoot
+    - serializedVersion: 2
+      name: rightFoot
       rect:
         serializedVersion: 2
         x: 63
@@ -59,7 +72,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: leftFoot
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: leftFoot
       rect:
         serializedVersion: 2
         x: 251
@@ -70,7 +85,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: body
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: body
       rect:
         serializedVersion: 2
         x: 79
@@ -81,7 +98,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: tache
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: tache
       rect:
         serializedVersion: 2
         x: 470
@@ -92,7 +111,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: leftHand
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: leftHand
       rect:
         serializedVersion: 2
         x: 337
@@ -103,7 +124,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: hat
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: hat
       rect:
         serializedVersion: 2
         x: 772
@@ -114,7 +137,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: rightHand
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: rightHand
       rect:
         serializedVersion: 2
         x: 18
@@ -125,7 +150,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: bazooka
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: bazooka
       rect:
         serializedVersion: 2
         x: 301
@@ -136,7 +163,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: rightEye
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: rightEye
       rect:
         serializedVersion: 2
         x: 741
@@ -147,7 +176,9 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: leftEye
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: leftEye
       rect:
         serializedVersion: 2
         x: 835
@@ -158,6 +189,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      tessellationDetail: -1
     outline: []
   spritePackingTag: characters
   userData: 

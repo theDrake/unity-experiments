@@ -1,7 +1,11 @@
 fileFormatVersion: 2
 guid: 8ef95d64ca207f449917f64972ea5669
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: part_smokepuffs_0
+    21300002: part_smokepuffs_1
+    21300004: part_smokepuffs_2
+    21300006: part_smokepuffs_3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -44,11 +48,14 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: part_smokepuffs_0
+    - serializedVersion: 2
+      name: part_smokepuffs_0
       rect:
         serializedVersion: 2
         x: 23
@@ -59,7 +66,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: part_smokepuffs_1
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: part_smokepuffs_1
       rect:
         serializedVersion: 2
         x: 552
@@ -70,7 +79,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: part_smokepuffs_2
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: part_smokepuffs_2
       rect:
         serializedVersion: 2
         x: 816
@@ -81,7 +92,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: part_smokepuffs_3
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: part_smokepuffs_3
       rect:
         serializedVersion: 2
         x: 281
@@ -92,6 +105,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      tessellationDetail: -1
     outline: []
   spritePackingTag: 
   userData: 

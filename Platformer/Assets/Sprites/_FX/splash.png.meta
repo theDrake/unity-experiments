@@ -1,7 +1,12 @@
 fileFormatVersion: 2
 guid: e5e275498558a2542bb0465fa5e30d9b
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: splash_0
+    21300002: splash_1
+    21300004: splash_2
+    21300006: splash_3
+    21300008: splash_4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -44,11 +49,14 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: splash_0
+    - serializedVersion: 2
+      name: splash_0
       rect:
         serializedVersion: 2
         x: 0
@@ -59,7 +67,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: splash_1
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: splash_1
       rect:
         serializedVersion: 2
         x: 341
@@ -70,7 +80,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: splash_2
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: splash_2
       rect:
         serializedVersion: 2
         x: 682
@@ -81,7 +93,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: splash_3
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: splash_3
       rect:
         serializedVersion: 2
         x: 0
@@ -92,7 +106,9 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: splash_4
+      tessellationDetail: -1
+    - serializedVersion: 2
+      name: splash_4
       rect:
         serializedVersion: 2
         x: 341
@@ -103,6 +119,7 @@ TextureImporter:
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
+      tessellationDetail: -1
     outline: []
   spritePackingTag: 
   userData: 
