@@ -31,12 +31,11 @@ public class ShellExplosion : MonoBehaviour {
       }
       targetHealth.TakeDamage(CalculateDamage(targetRigidbody.position));
     }
-
     m_ExplosionParticles.transform.parent = null;
     m_ExplosionParticles.Play();
     m_ExplosionAudio.Play();
-
-    Destroy(m_ExplosionParticles.gameObject, m_ExplosionParticles.duration);
+    Destroy(m_ExplosionParticles.gameObject,
+      m_ExplosionParticles.main.duration);
     Destroy(gameObject);
   }
 
@@ -47,6 +46,6 @@ public class ShellExplosion : MonoBehaviour {
     float relativeDistance = (m_ExplosionRadius - explosionDistance) /
       m_ExplosionRadius;
 
-    return Mathf.Max(0f, relativeDistance * m_MaxDamage); ;
+    return Mathf.Max(0f, relativeDistance * m_MaxDamage);
   }
 }
