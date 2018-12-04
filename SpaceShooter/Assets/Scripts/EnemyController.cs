@@ -23,12 +23,10 @@ public class EnemyController : MonoBehaviour {
 
     if (playerTransform != null) {
       movement = new Vector3(playerTransform.position.x - transform.position.x,
-                             0.0f,
-                             -1.0f);
+                             0.0f, -1.0f);
       rb.velocity = movement * speed;
       rb.position = new Vector3(
-          Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax),
-          0.0f,
+          Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax), 0.0f,
           Mathf.Clamp(rb.position.z, boundary.zMin, boundary.zMax));
       rb.rotation = Quaternion.Euler(0.0f, 0.0f, rb.velocity.x * tilt);
     }
