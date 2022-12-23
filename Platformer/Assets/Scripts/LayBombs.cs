@@ -8,10 +8,10 @@ public class LayBombs : MonoBehaviour {
   public AudioClip bombsAway;  // Sound for when the player lays a bomb.
   public GameObject bomb;  // Prefab of the bomb.
 
-  private GUITexture bombHUD;  // HUD of whether the player has a bomb or not.
+  private UnityEngine.UI.Image bombHUD;  // HUD of whether the player has a bomb or not.
 
   void Awake() {
-    bombHUD = GameObject.Find("ui_bombHUD").GetComponent<GUITexture>();
+    bombHUD = GameObject.Find("ui_bombHUD").GetComponent<UnityEngine.UI.Image>();
   }
 
   void Update() {

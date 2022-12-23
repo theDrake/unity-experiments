@@ -14,6 +14,7 @@ public class ScoreShadow : MonoBehaviour {
   }
 
   void Update() {
-    GetComponent<GUIText>().text = guiCopy.GetComponent<GUIText>().text;
+    GetComponent<UnityEngine.UI.Text>().text =
+      guiCopy.GetComponent<UnityEngine.UI.Text>().text;
   }
 }

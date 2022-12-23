@@ -13,7 +13,7 @@ public class Score : MonoBehaviour {
   }
 
   void Update() {
-    GetComponent<GUIText>().text = "Score: " + score;
+    GetComponent<UnityEngine.UI.Text>().text = "Score: " + score;
     if (previousScore != score)
       playerControl.StartCoroutine(playerControl.Taunt());
     previousScore = score;
