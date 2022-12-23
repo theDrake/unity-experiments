@@ -9,7 +9,7 @@ public class GameController : MonoBehaviour {
   public GameObject[] hazards;
   public GameObject restartButton;
   public Vector3 spawnValues;
-  public GUIText scoreText, restartText, gameOverText;
+  public UnityEngine.UI.Text scoreText, restartText, gameOverText;
 
   private bool gameOver;
   private int score;
