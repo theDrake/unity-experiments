@@ -1,7 +1,8 @@
 using UnityEngine;
 
 public class CameraController : MonoBehaviour {
-  [SerializeField] private GameObject _focalObject;
+  // ENCAPSULATION
+  private Vehicle _focalObject;
   private bool _firstPerson = false;
   private Vector3 _positionOffset;
   private Vector3 _positionOffset1st = new Vector3(0f, 2.25f, 3.75f);
@@ -12,6 +13,7 @@ public class CameraController : MonoBehaviour {
   private Vector3 _rotationOffset = new Vector3(0, 0, 0);
 
   void Start() {
+    _focalObject = FindObjectOfType<Player>().GetComponent<Vehicle>();
     _positionOffset = _positionOffset3rd = _positionOffset3rdMin;
   }
 
@@ -23,6 +25,7 @@ public class CameraController : MonoBehaviour {
         Quaternion.Euler(_rotationOffset);
   }
 
+  // ABSTRACTION
   void UpdatePositionOffset() {
     if (Input.GetKeyUp(KeyCode.Tab)) {
       _firstPerson = !_firstPerson;

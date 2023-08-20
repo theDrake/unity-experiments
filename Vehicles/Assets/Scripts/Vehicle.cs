@@ -4,10 +4,10 @@ using UnityEngine;
 public class Vehicle : MonoBehaviour {
   // ENCAPSULATION
   [SerializeField] protected List<Axle> _axleList;
-  protected float _maxMotorTorque = 800;
-  protected float _maxSteeringAngle = 30;
-  protected float _envRadius = 250;
-  protected Vector3 _center = new Vector3(0, 2, 175);
+  protected float _maxMotorTorque = 1000.0f;
+  protected float _maxSteeringAngle = 45.0f;
+  protected float _envRadius = 250.0f;
+  protected Vector3 _center = new(0.0f, 2.0f, 175.0f);
   protected Rigidbody _rigidBody;
 
   public virtual void Start() {
@@ -15,13 +15,14 @@ public class Vehicle : MonoBehaviour {
     _rigidBody = GetComponent<Rigidbody>();
   }
 
-  public virtual void Update() {
+  public virtual void FixedUpdate() {
     if (Vector3.Distance(transform.position, _center) > _envRadius) {
       _rigidBody.Sleep();
-      transform.position = Vector3.Lerp(transform.position, _center, 0.01f);
+      transform.position = Vector3.Lerp(transform.position, _center, 0.0001f);
     }
   }
 
+  // ABSTRACTION
   public virtual void Move(float verticalInput, float horizontalInput) {
     float motorTorque = _maxMotorTorque * verticalInput;
     float steerAngle = _maxSteeringAngle * horizontalInput;
@@ -40,7 +41,14 @@ public class Vehicle : MonoBehaviour {
     }
   }
 
-  // ABSTRACTION
+  public virtual void MoveToward(Vector3 target) {
+    float verticalInput = 1.0f;
+    float horizontalInput =
+        transform.InverseTransformPoint(target).normalized.x;
+
+    Move(verticalInput, horizontalInput);
+  }
+
   public void ApplyLocalPositionToVisualWheel(WheelCollider collider) {
     if (collider.transform.childCount == 0) {
       return;
