@@ -10,6 +10,7 @@
 */[Rr]ecordings/
 */[Aa]ssets/AssetStore*
 */[Aa]ssets/Plugins/Editor/JetBrains*
+*/[Aa]ssets/TextMesh Pro/
 */[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 */[Aa]ssets/[Ss]treamingAssets/aa.meta
 */[Aa]ssets/[Ss]treamingAssets/aa/*
@@ -44,14 +45,13 @@ ExportedObj/
 *.pdb.meta
 *.mdb.meta
 
-# Unity3D generated file on crash reports
+# Crash-related files
 sysinfo.txt
+mono_crash.*
+crashlytics-build.properties
 
 # Builds
 *.apk
 *.aab
 *.unitypackage
 *.app
-
-# Crashlytics generated file
-crashlytics-build.properties
