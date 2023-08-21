@@ -1,10 +1,9 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour {
   // ENCAPSULATION
   private Vehicle _vehicle;
-  private GameObject _target;
+  private Vehicle _target;
   // private float _forwardSpeed = 20, _turnSpeed = 20;
 
   void Start() {
@@ -12,7 +11,11 @@ public class Enemy : MonoBehaviour {
   }
 
   private void FixedUpdate() {
-    if (_target) {
+    if (_vehicle.GetHealth() < 0) {
+      return;
+    }
+
+    if (_target && _target.GetHealth() > 0) {
       _vehicle.MoveToward(_target.transform.position);
     } else {
       FindNewTarget();
@@ -29,6 +32,6 @@ public class Enemy : MonoBehaviour {
     while (vehicles[i] == _vehicle && vehicles.Length > 1) {
       i = Random.Range(0, vehicles.Length);
     }
-    _target = vehicles[i].gameObject;
+    _target = vehicles[i];
   }
 }

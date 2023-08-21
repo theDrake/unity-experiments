@@ -18,15 +18,22 @@ public class CarnageManager : MonoBehaviour {
   [SerializeField] private Vehicle[] _vehiclePrefabs;
   private Vehicle _player;
   private TextMeshProUGUI _speedText;
-  private const float _envRadius = 250.0f;
   private int _numEnemies;
   private const int _numEnemiesMin = 0;
   private const int _numEnemiesMax = 100;
-  private bool _useMetricSystem;
+  private const float _envRadius = 250.0f;
+  private static Vector3 _center = new(0.0f, 2.0f, 175.0f);
+
+  public static bool OutOfBounds(Vector3 point) {
+    return point.y < 0 || Vector3.Distance(point, _center) > _envRadius;
+  }
+
+  public static Vector3 GetCenterPoint() {
+    return _center;
+  }
 
   private void Start() {
     _speedText = GameObject.Find("Speed Text").GetComponent<TextMeshProUGUI>();
-    _useMetricSystem = false;
     _numEnemies = 20;
     SpawnEnemies();
     SpawnPlayer();
@@ -38,12 +45,18 @@ public class CarnageManager : MonoBehaviour {
 
   // ABSTRACTION
   private void UpdateSpeedText() {
-    _speedText.text = "Speed: ";
-    if (_useMetricSystem) {
-      _speedText.text += Mathf.RoundToInt(_player.GetSpeed() * 3.6f) + " KPH";
-    } else {
-      _speedText.text += Mathf.RoundToInt(_player.GetSpeed() * 2.237f) + " MPH";
-    }
+    float speed = _player.GetSpeed();
+
+    _speedText.text = "Speed: " + GetMph(speed) + " mph / " + GetKph(speed) +
+        " kph";
+  }
+
+  private float GetMph(float n) {
+    return Mathf.Round(n * 2.237f);
+  }
+
+  private float GetKph(float n) {
+    return Mathf.Round(n * 3.6f);
   }
 
   private void SpawnPlayer() {
@@ -51,8 +64,7 @@ public class CarnageManager : MonoBehaviour {
 
     _player = Instantiate<Vehicle>(_vehiclePrefabs[prefab]);
     _player.gameObject.AddComponent<Player>();
-    _player.transform.SetPositionAndRotation(GetRandomSpawnPoint(),
-                                             _player.transform.rotation);
+    MoveToRandomSpawnPoint(_player);
   }
 
   private void SpawnEnemies() {
@@ -66,19 +78,18 @@ public class CarnageManager : MonoBehaviour {
     Vehicle enemy = Instantiate<Vehicle>(_vehiclePrefabs[prefab]);
 
     enemy.gameObject.AddComponent<Enemy>();
-    enemy.transform.SetPositionAndRotation(GetRandomSpawnPoint(),
-                                           enemy.transform.rotation);
+    MoveToRandomSpawnPoint(enemy);
   }
 
-  private Vector3 GetRandomSpawnPoint() {
+  private void MoveToRandomSpawnPoint(Vehicle v) {
     Vector3 spawnPoint = new Vector3(
-        Random.Range(-_envRadius / 2 + transform.position.x,
-                     _envRadius / 2 + transform.position.x),
-        transform.position.y + 1.0f,
-        Random.Range(-_envRadius / 2 + transform.position.z,
-                     _envRadius / 2 + transform.position.z)
+        Random.Range(-_envRadius / 2 + _center.x, _envRadius / 2 + _center.x),
+        _center.y + (v.GetComponent<Airplane>() ? Random.Range(_envRadius / 10,
+                                                               _envRadius) :
+                                                  0.5f),
+        Random.Range(-_envRadius / 2 + _center.z, _envRadius / 2 + _center.z)
     );
-
-    return spawnPoint;
+    v.transform.SetPositionAndRotation(spawnPoint, v.transform.rotation);
+    v.transform.LookAt(_center);
   }
 }

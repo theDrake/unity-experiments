@@ -1,7 +1,6 @@
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-  // ENCAPSULATION
   private Vehicle _vehicle;
   // private float _forwardSpeed = 80;
   // private float _turnSpeed = 60;
@@ -12,7 +11,9 @@ public class Player : MonoBehaviour {
   }
 
   void FixedUpdate() {
-    _vehicle.Move(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
+    if (_vehicle.GetHealth() > 0) {
+      _vehicle.Move(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
+    }
     // transform.Translate(Vector3.forward * Time.deltaTime * _forwardSpeed *
     //   verticalInput);
     // _rigidBody.AddRelativeForce(Vector3.forward * _forwardForce *

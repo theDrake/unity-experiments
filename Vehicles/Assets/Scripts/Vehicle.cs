@@ -6,24 +6,15 @@ public class Vehicle : MonoBehaviour {
   [SerializeField] protected List<Axle> _axleList;
   protected float _maxMotorTorque = 1000.0f;
   protected float _maxSteeringAngle = 45.0f;
-  protected float _envRadius = 250.0f;
-  protected Vector3 _center = new(0.0f, 2.0f, 175.0f);
+  protected float _health;
   protected Rigidbody _rigidBody;
-
-  public virtual void Start() {
-    // transform.SetPositionAndRotation(_center, initialRotation);
-    _rigidBody = GetComponent<Rigidbody>();
-  }
-
-  public virtual void FixedUpdate() {
-    if (Vector3.Distance(transform.position, _center) > _envRadius) {
-      _rigidBody.Sleep();
-      transform.position = Vector3.Lerp(transform.position, _center, 0.0001f);
-    }
-  }
 
   // ABSTRACTION
   public virtual void Move(float verticalInput, float horizontalInput) {
+    if (_health < 0) {
+      return;
+    }
+
     float motorTorque = _maxMotorTorque * verticalInput;
     float steerAngle = _maxSteeringAngle * horizontalInput;
 
@@ -42,6 +33,10 @@ public class Vehicle : MonoBehaviour {
   }
 
   public virtual void MoveToward(Vector3 target) {
+    if (_health < 0) {
+      return;
+    }
+
     float verticalInput = 1.0f;
     float horizontalInput =
         transform.InverseTransformPoint(target).normalized.x;
@@ -49,7 +44,39 @@ public class Vehicle : MonoBehaviour {
     Move(verticalInput, horizontalInput);
   }
 
-  public void ApplyLocalPositionToVisualWheel(WheelCollider collider) {
+  public virtual float GetSpeed() {
+    return _rigidBody.velocity.magnitude;
+  }
+
+  public virtual float GetHealth() {
+    return _health;
+  }
+
+  protected virtual void Start() {
+    _rigidBody = GetComponent<Rigidbody>();
+    _health = _rigidBody.mass;
+  }
+
+  protected virtual void FixedUpdate() {
+    if (CarnageManager.OutOfBounds(transform.position)) {
+      _rigidBody.Sleep();
+      transform.position = Vector3.Lerp(transform.position,
+                                        CarnageManager.GetCenterPoint(),
+                                        0.0001f);
+    }
+  }
+
+  protected virtual void OnCollisionEnter(Collision collision) {
+    if (_health < 0 || collision.collider.CompareTag("Harmless")) {
+      return;
+    }
+    _health -= collision.impulse.magnitude / 10;
+    if (_health < 0) {
+      Explode();
+    }
+  }
+
+  protected virtual void ApplyLocalPositionToVisualWheel(WheelCollider collider) {
     if (collider.transform.childCount == 0) {
       return;
     }
@@ -62,8 +89,10 @@ public class Vehicle : MonoBehaviour {
     visualWheel.transform.rotation = rotation;
   }
 
-  public float GetSpeed() {
-    return _rigidBody.velocity.magnitude;
+  protected virtual void Explode() {
+    if (GetComponent<Player>()) {
+      Debug.Log("You lose!");
+    }
   }
 }
 
