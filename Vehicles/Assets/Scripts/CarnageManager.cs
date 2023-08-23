@@ -52,7 +52,7 @@ public class CarnageManager : MonoBehaviour {
   private void Start() {
     _speedText = GameObject.Find("Speed Text").GetComponent<TextMeshProUGUI>();
     _spawnCountdown = _spawnDelay;
-    _numEnemies = 20;
+    _numEnemies = 0;
     SpawnPlayer();
   }
 
@@ -80,7 +80,7 @@ public class CarnageManager : MonoBehaviour {
   }
 
   private void SpawnPlayer() {
-    int prefab = Random.Range(0, _vehiclePrefabs.Length);
+    int prefab = 2; // Random.Range(0, _vehiclePrefabs.Length);
 
     _player = Instantiate<Vehicle>(_vehiclePrefabs[prefab]);
     _player.Type = (Vehicle.VehicleType) prefab;
