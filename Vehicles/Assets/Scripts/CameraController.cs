@@ -7,14 +7,15 @@ public class CameraController : MonoBehaviour {
   private Vector3 _positionOffset;
   private Vector3 _positionOffset1st = new Vector3(0f, 2.25f, 3.75f);
   private Vector3 _positionOffset3rd;
-  private Vector3 _positionOffset3rdMin = new Vector3(0, 7, -14);
-  private Vector3 _positionOffset3rdMax = new Vector3(0, 21, -42);
-  private Vector3 _positionOffset3rdModifier = new Vector3(0, 2, -4);
+  private readonly Vector3 _positionOffset3rdMin = new Vector3(0, 7, -14);
+  private readonly Vector3 _positionOffset3rdMax = new Vector3(0, 21, -42);
+  private readonly Vector3 _positionOffset3rdModifier = new Vector3(0, 2, -4);
   private Vector3 _rotationOffset = new Vector3(0, 0, 0);
 
   void Start() {
-    _focalObject = FindObjectOfType<Player>().GetComponent<Vehicle>();
+    _focalObject = FindAnyObjectByType<Player>().GetComponent<Vehicle>();
     _positionOffset = _positionOffset3rd = _positionOffset3rdMin;
+
   }
 
   void LateUpdate() {

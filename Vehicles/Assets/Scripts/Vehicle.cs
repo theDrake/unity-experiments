@@ -38,8 +38,8 @@ public class Vehicle : MonoBehaviour {
         axle.LeftWheel.motorTorque = motorTorque;
         axle.RightWheel.motorTorque = motorTorque;
       }
-      // UpdateVisualWheel(axle.LeftWheel);
-      // UpdateVisualWheel(axle.RightWheel);
+      UpdateVisualWheel(axle.LeftWheel);
+      UpdateVisualWheel(axle.RightWheel);
     }
   }
 

@@ -49,6 +49,7 @@ public class Airplane : Vehicle {
   protected override void Explode() {
     _rigidBody.useGravity = true;
     _propellerSpeed /= 10;
+    base.Explode();
   }
 
   protected void Update() {
