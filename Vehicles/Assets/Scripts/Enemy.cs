@@ -1,21 +1,14 @@
 using UnityEngine;
 
-public class Enemy : MonoBehaviour {
+// INHERITANCE
+public class Enemy : GameCharacter {
   // ENCAPSULATION
-  private Vehicle _vehicle;
-  private Vehicle _target;
-  // private float _forwardSpeed = 20, _turnSpeed = 20;
+  protected Vehicle _target;
 
-  void Start() {
-    _vehicle = GetComponent<Vehicle>();
-  }
-
-  private void FixedUpdate() {
-    if (_vehicle.GetHealth() < 0) {
+  protected virtual void FixedUpdate() {
+    if (Dead()) {
       return;
-    }
-
-    if (_target && _target.GetHealth() > 0) {
+    } else if (_target && _target.GetHealth() > 0) {
       _vehicle.MoveToward(_target.transform.position);
     } else {
       FindNewTarget();
@@ -25,7 +18,7 @@ public class Enemy : MonoBehaviour {
   }
 
   // ABSTRACTION
-  public void FindNewTarget() {
+  public virtual void FindNewTarget() {
     Vehicle[] vehicles = FindObjectsByType<Vehicle>(FindObjectsSortMode.None);
     int i = Random.Range(0, vehicles.Length);
 

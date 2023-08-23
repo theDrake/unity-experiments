@@ -2,9 +2,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Vehicle : MonoBehaviour {
+  public enum VehicleType {
+    Airplane,
+    Bus,
+    Car,
+    Tank,
+    Truck,
+    Van,
+    NumVehicleTypes
+  }
+  public VehicleType Type;
+
   // ENCAPSULATION
   [SerializeField] protected List<Axle> _axleList;
-  protected float _maxMotorTorque = 1000.0f;
+  protected float _maxMotorTorque = 1200.0f;
   protected float _maxSteeringAngle = 45.0f;
   protected float _health;
   protected Rigidbody _rigidBody;
@@ -27,8 +38,8 @@ public class Vehicle : MonoBehaviour {
         axle.LeftWheel.motorTorque = motorTorque;
         axle.RightWheel.motorTorque = motorTorque;
       }
-      ApplyLocalPositionToVisualWheel(axle.LeftWheel);
-      ApplyLocalPositionToVisualWheel(axle.RightWheel);
+      // UpdateVisualWheel(axle.LeftWheel);
+      // UpdateVisualWheel(axle.RightWheel);
     }
   }
 
@@ -76,22 +87,19 @@ public class Vehicle : MonoBehaviour {
     }
   }
 
-  protected virtual void ApplyLocalPositionToVisualWheel(WheelCollider collider) {
+  protected virtual void UpdateVisualWheel(WheelCollider collider) {
     if (collider.transform.childCount == 0) {
       return;
     }
-    Vector3 position;
-    Quaternion rotation;
-    Transform visualWheel = collider.transform.GetChild(0);
-
-    collider.GetWorldPose(out position, out rotation);
-    visualWheel.transform.position = position;
-    visualWheel.transform.rotation = rotation;
+    collider.GetWorldPose(out Vector3 position, out Quaternion rotation);
+    collider.transform.GetChild(0).SetPositionAndRotation(position, rotation);
   }
 
   protected virtual void Explode() {
     if (GetComponent<Player>()) {
       Debug.Log("You lose!");
+    } else {
+      CarnageManager.CheckForVictory();
     }
   }
 }
