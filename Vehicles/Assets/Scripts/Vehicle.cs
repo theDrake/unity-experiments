@@ -2,27 +2,47 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Vehicle : MonoBehaviour {
+  // ENCAPSULATION
   public enum VehicleType {
-    Airplane,
-    Bus,
     Car,
-    Tank,
     Truck,
     Van,
+    Bus,
+    Tank,
+    Airplane,
     NumVehicleTypes
   }
   public VehicleType Type;
+  public float Health { get; private set; }
 
-  // ENCAPSULATION
+  [System.Serializable] protected class Axle {
+    public WheelCollider LeftWheel;
+    public WheelCollider RightWheel;
+    public bool AttachedToMotor;
+    public bool ProvidesSteering;
+  }
   [SerializeField] protected List<Axle> _axleList;
   protected float _maxMotorTorque = 1200.0f;
   protected float _maxSteeringAngle = 45.0f;
-  protected float _health;
   protected Rigidbody _rigidBody;
+
+  protected virtual void Start() {
+    _rigidBody = GetComponent<Rigidbody>();
+    Health = _rigidBody.mass;
+  }
+
+  protected virtual void FixedUpdate() {
+    if (CarnageManager.Instance.OutOfBounds(transform.position)) {
+      _rigidBody.Sleep();
+      transform.position = Vector3.Lerp(transform.position,
+                                        CarnageManager.Instance.CenterPoint,
+                                        0.0001f);
+    }
+  }
 
   // ABSTRACTION
   public virtual void Move(float verticalInput, float horizontalInput) {
-    if (_health < 0) {
+    if (Health < 0) {
       return;
     }
 
@@ -44,7 +64,7 @@ public class Vehicle : MonoBehaviour {
   }
 
   public virtual void MoveToward(Vector3 target) {
-    if (_health < 0) {
+    if (Health < 0) {
       return;
     }
 
@@ -59,30 +79,12 @@ public class Vehicle : MonoBehaviour {
     return _rigidBody.velocity.magnitude;
   }
 
-  public virtual float GetHealth() {
-    return _health;
-  }
-
-  protected virtual void Start() {
-    _rigidBody = GetComponent<Rigidbody>();
-    _health = _rigidBody.mass;
-  }
-
-  protected virtual void FixedUpdate() {
-    if (CarnageManager.OutOfBounds(transform.position)) {
-      _rigidBody.Sleep();
-      transform.position = Vector3.Lerp(transform.position,
-                                        CarnageManager.GetCenterPoint(),
-                                        0.0001f);
-    }
-  }
-
   protected virtual void OnCollisionEnter(Collision collision) {
-    if (_health < 0 || collision.collider.CompareTag("Harmless")) {
+    if (Health < 0 || collision.collider.CompareTag("Harmless")) {
       return;
     }
-    _health -= collision.impulse.magnitude / 10;
-    if (_health < 0) {
+    Health -= collision.impulse.magnitude / 10;
+    if (Health < 0) {
       Explode();
     }
   }
@@ -99,15 +101,7 @@ public class Vehicle : MonoBehaviour {
     if (GetComponent<Player>()) {
       Debug.Log("You lose!");
     } else {
-      CarnageManager.CheckForVictory();
+      CarnageManager.Instance.CheckForVictory();
     }
   }
-}
-
-[System.Serializable]
-public class Axle {
-  public WheelCollider LeftWheel;
-  public WheelCollider RightWheel;
-  public bool AttachedToMotor;
-  public bool ProvidesSteering;
 }

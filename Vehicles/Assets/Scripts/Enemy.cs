@@ -2,13 +2,12 @@ using UnityEngine;
 
 // INHERITANCE
 public class Enemy : GameCharacter {
-  // ENCAPSULATION
   protected Vehicle _target;
 
   protected virtual void FixedUpdate() {
     if (Dead()) {
       return;
-    } else if (_target && _target.GetHealth() > 0) {
+    } else if (_target && _target.Health > 0) {
       _vehicle.MoveToward(_target.transform.position);
     } else {
       FindNewTarget();

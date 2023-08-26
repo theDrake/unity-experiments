@@ -1,32 +1,65 @@
+using System.IO;
 using UnityEngine;
-using TMPro;
+using UnityEngine.SceneManagement;
 
 public class CarnageManager : MonoBehaviour {
   // ENCAPSULATION
-  public int NumEnemies {
-    get { return _numEnemies; }
-    set {
-      if (value < _numEnemiesMin) {
-        _numEnemies = _numEnemiesMin;
-      } else if (value > _numEnemiesMax) {
-        _numEnemies = _numEnemiesMax;
-      }
-      _numEnemies = value;
-    }
+  public static CarnageManager Instance { get; private set; }
+  public readonly Vector3 CenterPoint = new(0.0f, 2.0f, 175.0f);
+  [System.Serializable] private class GameData {
+    public string PlayerName;
+    public Vehicle.VehicleType PlayerVehicleType;
+    public int NumEnemies;
   }
 
   [SerializeField] private Vehicle[] _vehiclePrefabs;
   private Vehicle _player;
-  private TextMeshProUGUI _speedText;
-  private int _numEnemies;
-  private const int _numEnemiesMin = 0;
-  private const int _numEnemiesMax = 100;
-  private static float _spawnCountdown;
-  private const float _spawnDelay = 3.0f; // seconds
+  private const int _minEnemies = 0;
+  private const int _maxEnemies = 99;
+  private const int _defaultNumEnemies = 10;
+  private const int _maxNameLength = 20;
+  private float _enemySpawnCountdown;
+  private const float _enemySpawnDelay = 3.0f; // seconds
   private const float _envRadius = 250.0f;
-  private static readonly Vector3 _center = new(0.0f, 2.0f, 175.0f);
+  private bool _playing;
+  private string _saveFile;
+  private GameData _gameData;
 
-  public static void CheckForVictory() {
+  private void Awake() {
+    if (!Instance) {
+      Instance = this;
+      DontDestroyOnLoad(gameObject);
+      _playing = false;
+      _saveFile = Application.persistentDataPath + "/carnage.json";
+      LoadData();
+    } else {
+      Destroy(gameObject);
+    }
+  }
+
+  private void Update() {
+    if (!_playing) {
+      return;
+    } else if (Input.GetKeyDown(KeyCode.Escape)) {
+      ReturnToTitleScreen();
+    } else {
+      if (_enemySpawnCountdown > 0 &&
+          (_enemySpawnCountdown -= Time.deltaTime) < 0) {
+        SpawnEnemies();
+      }
+    }
+  }
+
+  // ABSTRACTION
+  public void StartGame() {
+    SaveData();
+    SpawnPlayer();
+    SceneManager.LoadScene(1);
+    _enemySpawnCountdown = _enemySpawnDelay;
+    _playing = true;
+  }
+
+  public void CheckForVictory() {
     if (FindAnyObjectByType<Player>().Dead()) {
       return;
     }
@@ -38,54 +71,19 @@ public class CarnageManager : MonoBehaviour {
       }
     }
     Debug.Log("You win!");
-    _spawnCountdown = _spawnDelay;
-  }
-
-  public static bool OutOfBounds(Vector3 point) {
-    return point.y < 0 || Vector3.Distance(point, _center) > _envRadius;
-  }
-
-  public static Vector3 GetCenterPoint() {
-    return _center;
-  }
-
-  private void Start() {
-    _speedText = GameObject.Find("Speed Text").GetComponent<TextMeshProUGUI>();
-    _spawnCountdown = _spawnDelay;
-    _numEnemies = 0;
-    SpawnPlayer();
-  }
-
-  private void Update() {
-    UpdateSpeedText();
-    if (_spawnCountdown > 0 && (_spawnCountdown -= Time.deltaTime) < 0) {
-      SpawnEnemies();
-    }
-  }
-
-  // ABSTRACTION
-  private void UpdateSpeedText() {
-    float speed = _player.GetSpeed();
-
-    _speedText.text = "Speed: " + GetMph(speed) + " mph / " + GetKph(speed) +
-        " kph";
-  }
-
-  private float GetMph(float n) {
-    return Mathf.Round(n * 2.237f);
-  }
-
-  private float GetKph(float n) {
-    return Mathf.Round(n * 3.6f);
+    _enemySpawnCountdown = _enemySpawnDelay;
   }
 
   private void SpawnPlayer() {
-    int prefab = 2; // Random.Range(0, _vehiclePrefabs.Length);
-
-    _player = Instantiate<Vehicle>(_vehiclePrefabs[prefab]);
-    _player.Type = (Vehicle.VehicleType) prefab;
+    if (_player) {
+      Destroy(_player.gameObject);
+    }
+    _player =
+       Instantiate<Vehicle>(_vehiclePrefabs[(int) _gameData.PlayerVehicleType]);
+    _player.Type = _gameData.PlayerVehicleType;
     _player.gameObject.AddComponent<Player>();
     MoveToRandomSpawnPoint(_player);
+    DontDestroyOnLoad(_player);
   }
 
   private void SpawnEnemies() {
@@ -94,7 +92,7 @@ public class CarnageManager : MonoBehaviour {
     foreach (Enemy enemy in enemies) {
       Destroy(enemy.gameObject);
     }
-    for (int i = 0; i < _numEnemies; ++i) {
+    for (int i = 0; i < _gameData.NumEnemies; ++i) {
       SpawnEnemy();
     }
   }
@@ -110,12 +108,80 @@ public class CarnageManager : MonoBehaviour {
 
   private void MoveToRandomSpawnPoint(Vehicle v) {
     Vector3 spawnPoint = new Vector3(
-        Random.Range(-_envRadius / 2 + _center.x, _envRadius / 2 + _center.x),
-        _center.y + (v.Type == Vehicle.VehicleType.Airplane ?
-                     Random.Range(_envRadius / 10, _envRadius) : 0.5f),
-        Random.Range(-_envRadius / 2 + _center.z, _envRadius / 2 + _center.z)
+        Random.Range(-_envRadius / 2 + CenterPoint.x,
+                     _envRadius / 2 + CenterPoint.x),
+        CenterPoint.y + (v.Type == Vehicle.VehicleType.Airplane ?
+                         Random.Range(_envRadius / 10, _envRadius) : 0.5f),
+        Random.Range(-_envRadius / 2 + CenterPoint.z,
+                     _envRadius / 2 + CenterPoint.z)
     );
     v.transform.SetPositionAndRotation(spawnPoint, v.transform.rotation);
-    v.transform.LookAt(_center);
+    v.transform.LookAt(CenterPoint);
+  }
+
+  public bool OutOfBounds(Vector3 point) {
+    return point.y < 0 || Vector3.Distance(point, CenterPoint) > _envRadius;
+  }
+
+  public string GetPlayerName() {
+    return _gameData.PlayerName;
+  }
+
+  public void SetPlayerName(string value) {
+    if (value.Length > _maxNameLength) {
+      Debug.Log("Excessive name length: " + value.Length);
+      _gameData.PlayerName = value[.._maxNameLength];
+    } else {
+      _gameData.PlayerName = value;
+    }
+  }
+
+  public Vehicle.VehicleType GetPlayerVehicleType() {
+    return _gameData.PlayerVehicleType;
+  }
+
+  public void SetPlayerVehicleType(int value) {
+    if (value < 0 || value > (int) Vehicle.VehicleType.NumVehicleTypes) {
+      Debug.Log("Invalid value for PlayerVehicleType: " + value);
+      value = 0;
+    }
+    _gameData.PlayerVehicleType = (Vehicle.VehicleType) value;
+  }
+
+  public int GetNumEnemies() {
+    return _gameData.NumEnemies;
+  }
+
+  public void SetNumEnemies(int value) {
+    if (value < _minEnemies) {
+      Debug.Log("Invalid value for NumEnemies: " + value);
+      _gameData.NumEnemies = _minEnemies;
+    } else if (value > _maxEnemies) {
+      Debug.Log("Invalid value for NumEnemies: " + value);
+      _gameData.NumEnemies = _maxEnemies;
+    } else {
+      _gameData.NumEnemies = value;
+    }
+  }
+
+  public void SaveData() {
+    File.WriteAllText(_saveFile, JsonUtility.ToJson(_gameData));
+  }
+
+  public void LoadData() {
+    if (File.Exists(_saveFile)) {
+      string json = File.ReadAllText(_saveFile);
+      _gameData = JsonUtility.FromJson<GameData>(json);
+    } else {
+      _gameData = new GameData();
+      _gameData.PlayerName = "";
+      _gameData.PlayerVehicleType = 0;
+      _gameData.NumEnemies = _defaultNumEnemies;
+    }
+  }
+
+  private void ReturnToTitleScreen() {
+    _playing = false;
+    SceneManager.LoadScene(0);
   }
 }

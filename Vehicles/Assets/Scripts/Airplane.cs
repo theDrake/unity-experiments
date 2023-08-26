@@ -2,20 +2,24 @@ using UnityEngine;
 
 // INHERITANCE
 public class Airplane : Vehicle {
-  [SerializeField] private Transform _propeller;
+  [SerializeField] protected Transform _propeller;
   protected float _forwardSpeed = 25.0f;
   protected float _rotationSpeed = 150.0f;
-  private float _propellerSpeed = 30.0f;
-  private const float _yMin = 1.0f;
+  protected float _propellerSpeed = 30.0f;
+  protected const float _yMin = 1.0f;
+
+  protected virtual void Update() {
+    _propeller.Rotate(0, 0, _propellerSpeed);
+  }
 
   // POLYMORPHISM
   public override void Move(float verticalInput, float horizontalInput) {
-    if (_health < 0) {
+    if (Health < 0) {
       return;
     }
 
     if (transform.position.y > _yMin &&
-        !CarnageManager.OutOfBounds(transform.position)) {
+        !CarnageManager.Instance.OutOfBounds(transform.position)) {
       transform.Translate(_forwardSpeed * Time.deltaTime * Vector3.forward);
     }
     transform.Rotate(_rotationSpeed * verticalInput * Time.deltaTime *
@@ -25,7 +29,7 @@ public class Airplane : Vehicle {
   }
 
   public override void MoveToward(Vector3 target) {
-    if (_health < 0) {
+    if (Health < 0) {
       return;
     }
 
@@ -39,7 +43,7 @@ public class Airplane : Vehicle {
   }
 
   public override float GetSpeed() {
-    if (_health < 0) {
+    if (Health < 0) {
       return base.GetSpeed();
     }
 
@@ -50,9 +54,5 @@ public class Airplane : Vehicle {
     _rigidBody.useGravity = true;
     _propellerSpeed /= 10;
     base.Explode();
-  }
-
-  protected void Update() {
-    _propeller.Rotate(0, 0, _propellerSpeed);
   }
 }
