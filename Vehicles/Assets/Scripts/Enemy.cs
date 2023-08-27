@@ -3,6 +3,13 @@ using UnityEngine;
 // INHERITANCE
 public class Enemy : GameCharacter {
   protected Vehicle _target;
+  protected Camera _camera;
+
+  // POLYMORPHISM
+  protected override void Start() {
+    _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+    base.Start();
+  }
 
   protected virtual void FixedUpdate() {
     if (Dead()) {
@@ -12,6 +19,7 @@ public class Enemy : GameCharacter {
     } else {
       FindNewTarget();
     }
+    _vehicle.SetHealthBarRotation(_camera.transform.rotation);
     // transform.Translate(Vector3.forward * Time.deltaTime * _forwardSpeed);
     // transform.LookAt(_target.transform.position);
   }

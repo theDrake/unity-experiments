@@ -14,7 +14,7 @@ public class Airplane : Vehicle {
 
   // POLYMORPHISM
   public override void Move(float verticalInput, float horizontalInput) {
-    if (Health < 0) {
+    if (Health <= 0) {
       return;
     }
 
@@ -29,7 +29,7 @@ public class Airplane : Vehicle {
   }
 
   public override void MoveToward(Vector3 target) {
-    if (Health < 0) {
+    if (Health <= 0) {
       return;
     }
 
@@ -43,7 +43,7 @@ public class Airplane : Vehicle {
   }
 
   public override float GetSpeed() {
-    if (Health < 0) {
+    if (Health <= 0) {
       return base.GetSpeed();
     }
 

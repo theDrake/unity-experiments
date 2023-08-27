@@ -12,6 +12,6 @@ public class GameCharacter : MonoBehaviour {
   }
 
   public virtual bool Dead() {
-    return _vehicle.Health < 0;
+    return _vehicle.Health <= 0;
   }
 }

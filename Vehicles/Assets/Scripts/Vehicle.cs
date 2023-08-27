@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Vehicle : MonoBehaviour {
   // ENCAPSULATION
@@ -25,10 +26,13 @@ public class Vehicle : MonoBehaviour {
   protected float _maxMotorTorque = 1200.0f;
   protected float _maxSteeringAngle = 45.0f;
   protected Rigidbody _rigidBody;
+  protected Slider _healthBar;
 
   protected virtual void Start() {
     _rigidBody = GetComponent<Rigidbody>();
+    _healthBar = GetComponentInChildren<Slider>();
     Health = _rigidBody.mass;
+    _healthBar.SetValueWithoutNotify(Health / _rigidBody.mass);
   }
 
   protected virtual void FixedUpdate() {
@@ -42,7 +46,7 @@ public class Vehicle : MonoBehaviour {
 
   // ABSTRACTION
   public virtual void Move(float verticalInput, float horizontalInput) {
-    if (Health < 0) {
+    if (Health <= 0) {
       return;
     }
 
@@ -64,7 +68,7 @@ public class Vehicle : MonoBehaviour {
   }
 
   public virtual void MoveToward(Vector3 target) {
-    if (Health < 0) {
+    if (Health <= 0) {
       return;
     }
 
@@ -80,11 +84,12 @@ public class Vehicle : MonoBehaviour {
   }
 
   protected virtual void OnCollisionEnter(Collision collision) {
-    if (Health < 0 || collision.collider.CompareTag("Harmless")) {
+    if (Health <= 0 || collision.collider.CompareTag("Harmless")) {
       return;
     }
     Health -= collision.impulse.magnitude / 10;
-    if (Health < 0) {
+    _healthBar.value = Health / _rigidBody.mass;
+    if (Health <= 0) {
       Explode();
     }
   }
@@ -97,7 +102,12 @@ public class Vehicle : MonoBehaviour {
     collider.transform.GetChild(0).SetPositionAndRotation(position, rotation);
   }
 
+  public virtual void SetHealthBarRotation(Quaternion rotation) {
+    _healthBar.transform.rotation = rotation;
+  }
+
   protected virtual void Explode() {
+    _healthBar.gameObject.SetActive(false);
     if (GetComponent<Player>()) {
       Debug.Log("You lose!");
     } else {
