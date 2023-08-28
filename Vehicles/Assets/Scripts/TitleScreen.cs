@@ -54,8 +54,8 @@ public class TitleScreen : MonoBehaviour {
     CarnageManager.Instance.SaveData();
 #if UNITY_EDITOR
     EditorApplication.ExitPlaymode();
-#else
-    Application.Quit();
+// #else
+//     Application.Quit();
 #endif
   }
 }
