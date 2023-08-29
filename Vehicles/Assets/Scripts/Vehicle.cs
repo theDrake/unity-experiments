@@ -14,7 +14,8 @@ public class Vehicle : MonoBehaviour {
     NumVehicleTypes
   }
   public VehicleType Type;
-  public float Health { get; private set; }
+  public float Health { get; protected set; }
+  public Vector3 FirstPersonCameraOffset { get; protected set; }
 
   [System.Serializable] protected class Axle {
     public WheelCollider LeftWheel;
@@ -32,7 +33,12 @@ public class Vehicle : MonoBehaviour {
     _rigidBody = GetComponent<Rigidbody>();
     _healthBar = GetComponentInChildren<Slider>();
     Health = _rigidBody.mass;
-    _healthBar.SetValueWithoutNotify(Health / _rigidBody.mass);
+    UpdateHealthBar();
+    FirstPersonCameraOffset = new Vector3(
+        _healthBar.transform.localPosition.x,
+        _healthBar.transform.localPosition.y - 1.25f,
+        _healthBar.transform.localPosition.z
+    );
   }
 
   protected virtual void FixedUpdate() {
@@ -49,7 +55,6 @@ public class Vehicle : MonoBehaviour {
     if (Health <= 0) {
       return;
     }
-
     float motorTorque = _maxMotorTorque * verticalInput;
     float steerAngle = _maxSteeringAngle * horizontalInput;
 
@@ -71,7 +76,6 @@ public class Vehicle : MonoBehaviour {
     if (Health <= 0) {
       return;
     }
-
     float verticalInput = 1.0f;
     float horizontalInput =
         transform.InverseTransformPoint(target).normalized.x;
@@ -88,7 +92,7 @@ public class Vehicle : MonoBehaviour {
       return;
     }
     Health -= collision.impulse.magnitude / 10;
-    _healthBar.value = Health / _rigidBody.mass;
+    UpdateHealthBar();
     if (Health <= 0) {
       Explode();
     }
@@ -100,6 +104,10 @@ public class Vehicle : MonoBehaviour {
     }
     collider.GetWorldPose(out Vector3 position, out Quaternion rotation);
     collider.transform.GetChild(0).SetPositionAndRotation(position, rotation);
+  }
+
+  protected virtual void UpdateHealthBar() {
+    _healthBar.value = Health / _rigidBody.mass;
   }
 
   public virtual void SetHealthBarRotation(Quaternion rotation) {

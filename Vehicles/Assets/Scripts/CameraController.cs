@@ -2,52 +2,49 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
   private Vehicle _focalObject;
-  private bool _firstPerson = false;
+  private bool _1stPerson = false;
   private Vector3 _positionOffset;
-  private Vector3 _positionOffset1st = new Vector3(0f, 2.25f, 3.75f);
-  private Vector3 _positionOffset3rd;
-  private readonly Vector3 _positionOffset3rdMin = new Vector3(0, 7, -14);
-  private readonly Vector3 _positionOffset3rdMax = new Vector3(0, 21, -42);
-  private readonly Vector3 _positionOffset3rdModifier = new Vector3(0, 2, -4);
-  private Vector3 _rotationOffset = new Vector3(0, 0, 0);
+  private Vector3 _3rdPersonOffset;
+  private static readonly Vector3 _3rdPersonOffsetMin = new(0, 7.0f, -12.0f);
+  private static readonly Vector3 _3rdPersonOffsetIncrement = new(0, 0, -4.0f);
+  private const float _3rdPersonMaxDistance = 50.0f;
+  private Vector3 _rotationOffset = new(0, 0, 0);
 
-  void Start() {
+  private void Start() {
     _focalObject = FindAnyObjectByType<Player>().GetComponent<Vehicle>();
-    _positionOffset = _positionOffset3rd = _positionOffset3rdMin;
+    _positionOffset = _3rdPersonOffset = _3rdPersonOffsetMin;
   }
 
-  void LateUpdate() {
+  private void LateUpdate() {
     UpdatePositionOffset();
     transform.SetPositionAndRotation(_focalObject.transform.position +
         _focalObject.transform.rotation * _positionOffset,
         _focalObject.transform.rotation * Quaternion.Euler(_rotationOffset));
   }
 
-  void UpdatePositionOffset() {
+  private void UpdatePositionOffset() {
     if (Input.GetKeyUp(KeyCode.Tab)) {
-      _firstPerson = !_firstPerson;
+      _1stPerson = !_1stPerson;
     } else {
       if (Input.mouseScrollDelta.y > 0) {
-        _positionOffset3rd -= _positionOffset3rdModifier;
-        if (_positionOffset3rd.y < _positionOffset3rdMin.y) {
-          _positionOffset3rd = _positionOffset3rdMin;
-          _firstPerson = true;
+        _3rdPersonOffset -= _3rdPersonOffsetIncrement;
+        if (_3rdPersonOffset.magnitude < _3rdPersonOffsetMin.magnitude) {
+          _1stPerson = true;
+          _3rdPersonOffset = _3rdPersonOffsetMin;
         }
       } else if (Input.mouseScrollDelta.y < 0) {
-        if (_firstPerson) {
-          _firstPerson = false;
-        } else {
-          _positionOffset3rd += _positionOffset3rdModifier;
-        }
-        if (_positionOffset3rd.y > _positionOffset3rdMax.y) {
-          _positionOffset3rd = _positionOffset3rdMax;
+        if (_1stPerson) {
+          _1stPerson = false;
+          _3rdPersonOffset = _3rdPersonOffsetMin;
+        } else if (_3rdPersonOffset.magnitude < _3rdPersonMaxDistance) {
+          _3rdPersonOffset += _3rdPersonOffsetIncrement;
         }
       }
     }
-    if (_firstPerson) {
-      _positionOffset = _positionOffset1st;
+    if (_1stPerson) {
+      _positionOffset = _focalObject.FirstPersonCameraOffset;
     } else {
-      _positionOffset = _positionOffset3rd;
+      _positionOffset = _3rdPersonOffset;
     }
   }
 }

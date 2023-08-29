@@ -40,13 +40,12 @@ public class CarnageManager : MonoBehaviour {
   private void Update() {
     if (!_playing) {
       return;
-    } else if (Input.GetKeyDown(KeyCode.Escape)) {
+    } else if (Input.GetKeyUp(KeyCode.Escape) ||
+               Input.GetKeyUp(KeyCode.Backspace)) {
       ReturnToTitleScreen();
-    } else {
-      if (_enemySpawnCountdown > 0 &&
-          (_enemySpawnCountdown -= Time.deltaTime) < 0) {
-        SpawnEnemies();
-      }
+    } else if (_enemySpawnCountdown > 0 &&
+               (_enemySpawnCountdown -= Time.deltaTime) < 0) {
+      SpawnEnemies();
     }
   }
 
@@ -107,13 +106,12 @@ public class CarnageManager : MonoBehaviour {
   }
 
   private void MoveToRandomSpawnPoint(Vehicle v) {
+    float spawnRadius = _envRadius * 0.7f;
     Vector3 spawnPoint = new Vector3(
-        Random.Range(-_envRadius / 2 + CenterPoint.x,
-                     _envRadius / 2 + CenterPoint.x),
+        Random.Range(CenterPoint.x - spawnRadius, CenterPoint.x + spawnRadius),
         CenterPoint.y + (v.Type == Vehicle.VehicleType.Airplane ?
-                         Random.Range(_envRadius / 10, _envRadius) : 0.5f),
-        Random.Range(-_envRadius / 2 + CenterPoint.z,
-                     _envRadius / 2 + CenterPoint.z)
+                         Random.Range(_envRadius / 10, spawnRadius) : 0.5f),
+        Random.Range(CenterPoint.z - spawnRadius, CenterPoint.z + spawnRadius)
     );
     v.transform.SetPositionAndRotation(spawnPoint, v.transform.rotation);
     v.transform.LookAt(CenterPoint);

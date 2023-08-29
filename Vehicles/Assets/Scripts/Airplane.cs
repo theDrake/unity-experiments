@@ -3,9 +3,9 @@ using UnityEngine;
 // INHERITANCE
 public class Airplane : Vehicle {
   [SerializeField] protected Transform _propeller;
-  protected float _forwardSpeed = 25.0f;
-  protected float _rotationSpeed = 150.0f;
-  protected float _propellerSpeed = 30.0f;
+  protected float _forwardSpeed = 28.0f;
+  protected float _rotationSpeed = 140.0f;
+  protected float _propellerSpeed = 31.0f;
   protected const float _yMin = 1.0f;
 
   protected virtual void Update() {
@@ -17,7 +17,6 @@ public class Airplane : Vehicle {
     if (Health <= 0) {
       return;
     }
-
     if (transform.position.y > _yMin &&
         !CarnageManager.Instance.OutOfBounds(transform.position)) {
       transform.Translate(_forwardSpeed * Time.deltaTime * Vector3.forward);
@@ -32,14 +31,10 @@ public class Airplane : Vehicle {
     if (Health <= 0) {
       return;
     }
-
-    // Vector3 direction = (target - transform.position).normalized;
-    Vector3 relativePosition = target - transform.position;
-    Quaternion rotation = Quaternion.LookRotation(relativePosition, Vector3.up);
-    transform.rotation = Quaternion.Lerp(transform.rotation, rotation,
-                                         _rotationSpeed * Time.deltaTime);
-
-    Move(0, 0); // no need for input
+    transform.rotation = Quaternion.Lerp(transform.rotation,
+        Quaternion.LookRotation(target - transform.position, Vector3.up),
+        Time.deltaTime);
+    Move(0, 0); // no additional rotation, just move forward
   }
 
   public override float GetSpeed() {
