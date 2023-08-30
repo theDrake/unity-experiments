@@ -2,16 +2,23 @@ using TMPro;
 using UnityEngine;
 
 public class CarnageCanvas : MonoBehaviour {
-  private TextMeshProUGUI _nameText;
-  private TextMeshProUGUI _speedText;
-  private Vehicle _player;
+  private static TextMeshProUGUI _speedText;
+  private static TextMeshProUGUI _enemiesText;
+  private static GameObject _victoryText;
+  private static GameObject _gameOverText;
+  private static Vehicle _player;
+  private static int _numEnemies;
 
   private void Start() {
-    _nameText = GameObject.Find("Name Text").GetComponent<TextMeshProUGUI>();
-    _speedText = GameObject.Find("Speed Text").GetComponent<TextMeshProUGUI>();
     _player = FindAnyObjectByType<Player>().GetComponent<Vehicle>();
-
-    _nameText.text = "Name: " + CarnageManager.Instance.GetPlayerName();
+    _victoryText = GameObject.Find("Victory Text");
+    _gameOverText = GameObject.Find("Game Over Text");
+    _victoryText.SetActive(false);
+    _gameOverText.SetActive(false);
+    _speedText = GameObject.Find("Speed Text").GetComponent<TextMeshProUGUI>();
+    _enemiesText = GameObject.Find(
+        "Enemies Text").GetComponent<TextMeshProUGUI>();
+    SetNumEnemies(0);
   }
 
   private void Update() {
@@ -19,6 +26,23 @@ public class CarnageCanvas : MonoBehaviour {
 
     _speedText.text = "Speed: " + GetMph(speed) + " mph / " + GetKph(speed) +
         " kph";
+  }
+
+  public static void SetNumEnemies(int n) {
+    _numEnemies = n;
+    _enemiesText.text = "Enemies: " + _numEnemies;
+    _victoryText.SetActive(false);
+  }
+
+  public static void DecrementNumEnemies() {
+    SetNumEnemies(_numEnemies - 1);
+    if (_numEnemies <= 0 && CarnageManager.Instance.Victorious()) {
+      _victoryText.SetActive(true);
+    }
+  }
+
+  public static void ShowGameOver() {
+    _gameOverText.SetActive(true);
   }
 
   private float GetMph(float n) {

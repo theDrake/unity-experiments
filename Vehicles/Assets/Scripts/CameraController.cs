@@ -16,35 +16,43 @@ public class CameraController : MonoBehaviour {
   }
 
   private void LateUpdate() {
-    UpdatePositionOffset();
+    if (Input.GetKeyUp(KeyCode.Tab)) {
+      _1stPerson = !_1stPerson;
+      UpdatePositionOffset();
+    } else if (Input.mouseScrollDelta.y > 0) {
+      ZoomIn();
+    } else if (Input.mouseScrollDelta.y < 0) {
+      ZoomOut();
+    }
     transform.SetPositionAndRotation(_focalObject.transform.position +
         _focalObject.transform.rotation * _positionOffset,
         _focalObject.transform.rotation * Quaternion.Euler(_rotationOffset));
   }
 
   private void UpdatePositionOffset() {
-    if (Input.GetKeyUp(KeyCode.Tab)) {
-      _1stPerson = !_1stPerson;
-    } else {
-      if (Input.mouseScrollDelta.y > 0) {
-        _3rdPersonOffset -= _3rdPersonOffsetIncrement;
-        if (_3rdPersonOffset.magnitude < _3rdPersonOffsetMin.magnitude) {
-          _1stPerson = true;
-          _3rdPersonOffset = _3rdPersonOffsetMin;
-        }
-      } else if (Input.mouseScrollDelta.y < 0) {
-        if (_1stPerson) {
-          _1stPerson = false;
-          _3rdPersonOffset = _3rdPersonOffsetMin;
-        } else if (_3rdPersonOffset.magnitude < _3rdPersonMaxDistance) {
-          _3rdPersonOffset += _3rdPersonOffsetIncrement;
-        }
-      }
-    }
     if (_1stPerson) {
       _positionOffset = _focalObject.FirstPersonCameraOffset;
     } else {
       _positionOffset = _3rdPersonOffset;
     }
+  }
+
+  private void ZoomIn() {
+    _3rdPersonOffset -= _3rdPersonOffsetIncrement;
+    if (_3rdPersonOffset.magnitude < _3rdPersonOffsetMin.magnitude) {
+      _1stPerson = true;
+      _3rdPersonOffset = _3rdPersonOffsetMin;
+    }
+    UpdatePositionOffset();
+  }
+
+  private void ZoomOut() {
+    if (_1stPerson) {
+      _1stPerson = false;
+      _3rdPersonOffset = _3rdPersonOffsetMin;
+    } else if (_3rdPersonOffset.magnitude < _3rdPersonMaxDistance) {
+      _3rdPersonOffset += _3rdPersonOffsetIncrement;
+    }
+    UpdatePositionOffset();
   }
 }

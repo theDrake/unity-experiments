@@ -34,18 +34,16 @@ public class Vehicle : MonoBehaviour {
     _healthBar = GetComponentInChildren<Slider>();
     Health = _rigidBody.mass;
     UpdateHealthBar();
-    FirstPersonCameraOffset = new Vector3(
-        _healthBar.transform.localPosition.x,
-        _healthBar.transform.localPosition.y - 1.25f,
-        _healthBar.transform.localPosition.z
-    );
+    FirstPersonCameraOffset = new(_healthBar.transform.localPosition.x,
+                                  _healthBar.transform.localPosition.y - 1.25f,
+                                  _healthBar.transform.localPosition.z);
   }
 
   protected virtual void FixedUpdate() {
     if (CarnageManager.Instance.OutOfBounds(transform.position)) {
       _rigidBody.Sleep();
       transform.position = Vector3.Lerp(transform.position,
-                                        CarnageManager.Instance.CenterPoint,
+                                        CarnageManager.Instance.Center,
                                         0.0001f);
     }
   }
@@ -117,9 +115,9 @@ public class Vehicle : MonoBehaviour {
   protected virtual void Explode() {
     _healthBar.gameObject.SetActive(false);
     if (GetComponent<Player>()) {
-      Debug.Log("You lose!");
+      CarnageCanvas.ShowGameOver();
     } else {
-      CarnageManager.Instance.CheckForVictory();
+      CarnageCanvas.DecrementNumEnemies();
     }
   }
 }

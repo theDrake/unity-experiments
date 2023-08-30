@@ -5,22 +5,27 @@ using UnityEngine.SceneManagement;
 public class CarnageManager : MonoBehaviour {
   // ENCAPSULATION
   public static CarnageManager Instance { get; private set; }
-  public readonly Vector3 CenterPoint = new(0.0f, 2.0f, 175.0f);
+  public readonly Vector3 Center = new(0.0f, 2.0f, 175.0f);
   [System.Serializable] private class GameData {
-    public string PlayerName;
     public Vehicle.VehicleType PlayerVehicleType;
     public int NumEnemies;
+    public int NumObstacles;
   }
 
   [SerializeField] private Vehicle[] _vehiclePrefabs;
+  [SerializeField] private GameObject[] _obstaclePrefabs;
   private Vehicle _player;
   private const int _minEnemies = 0;
   private const int _maxEnemies = 99;
   private const int _defaultNumEnemies = 10;
-  private const int _maxNameLength = 20;
-  private float _enemySpawnCountdown;
-  private const float _enemySpawnDelay = 3.0f; // seconds
+  private const int _minObstacles = 0;
+  private const int _maxObstacles = 99;
+  private const int _defaultNumObstacles = 10;
+  private float _spawnCountdown;
+  private const float _initialSpawnDelay = 0.1f; // seconds
+  private const float _respawnDelay = 5.0f; // seconds
   private const float _envRadius = 250.0f;
+  private const float _spawnRadius = _envRadius * 0.6f;
   private bool _playing;
   private string _saveFile;
   private GameData _gameData;
@@ -31,6 +36,11 @@ public class CarnageManager : MonoBehaviour {
       DontDestroyOnLoad(gameObject);
       _playing = false;
       _saveFile = Application.persistentDataPath + "/carnage.json";
+      _gameData = new GameData {
+        PlayerVehicleType = 0,
+        NumEnemies = _defaultNumEnemies,
+        NumObstacles = _defaultNumObstacles
+      };
       LoadData();
     } else {
       Destroy(gameObject);
@@ -43,8 +53,9 @@ public class CarnageManager : MonoBehaviour {
     } else if (Input.GetKeyUp(KeyCode.Escape) ||
                Input.GetKeyUp(KeyCode.Backspace)) {
       ReturnToTitleScreen();
-    } else if (_enemySpawnCountdown > 0 &&
-               (_enemySpawnCountdown -= Time.deltaTime) < 0) {
+    } else if (_spawnCountdown > 0 &&
+               (_spawnCountdown -= Time.deltaTime) < 0) {
+      SpawnObstacles();
       SpawnEnemies();
     }
   }
@@ -54,34 +65,32 @@ public class CarnageManager : MonoBehaviour {
     SaveData();
     SpawnPlayer();
     SceneManager.LoadScene(1);
-    _enemySpawnCountdown = _enemySpawnDelay;
+    _spawnCountdown = _initialSpawnDelay;
     _playing = true;
   }
 
-  public void CheckForVictory() {
+  public bool Victorious() {
     if (FindAnyObjectByType<Player>().Dead()) {
-      return;
+      return false;
     }
     Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
 
     foreach (Enemy enemy in enemies) {
       if (enemy.Alive()) {
-        return;
+        return false;
       }
     }
-    Debug.Log("You win!");
-    _enemySpawnCountdown = _enemySpawnDelay;
+    _spawnCountdown = _respawnDelay;
+
+    return true;
   }
 
   private void SpawnPlayer() {
     if (_player) {
       Destroy(_player.gameObject);
     }
-    _player =
-       Instantiate<Vehicle>(_vehiclePrefabs[(int) _gameData.PlayerVehicleType]);
-    _player.Type = _gameData.PlayerVehicleType;
+    _player = SpawnVehicle(_gameData.PlayerVehicleType);
     _player.gameObject.AddComponent<Player>();
-    MoveToRandomSpawnPoint(_player);
     DontDestroyOnLoad(_player);
   }
 
@@ -94,44 +103,64 @@ public class CarnageManager : MonoBehaviour {
     for (int i = 0; i < _gameData.NumEnemies; ++i) {
       SpawnEnemy();
     }
+    CarnageCanvas.SetNumEnemies(_gameData.NumEnemies);
   }
 
   private void SpawnEnemy() {
-    int prefab = Random.Range(0, _vehiclePrefabs.Length);
-    Vehicle enemy = Instantiate<Vehicle>(_vehiclePrefabs[prefab]);
+    Vehicle enemy = SpawnVehicle(
+        (Vehicle.VehicleType) Random.Range(0, _vehiclePrefabs.Length));
 
-    enemy.Type = (Vehicle.VehicleType) prefab;
     enemy.gameObject.AddComponent<Enemy>();
-    MoveToRandomSpawnPoint(enemy);
   }
 
-  private void MoveToRandomSpawnPoint(Vehicle v) {
-    float spawnRadius = _envRadius * 0.7f;
-    Vector3 spawnPoint = new Vector3(
-        Random.Range(CenterPoint.x - spawnRadius, CenterPoint.x + spawnRadius),
-        CenterPoint.y + (v.Type == Vehicle.VehicleType.Airplane ?
-                         Random.Range(_envRadius / 10, spawnRadius) : 0.5f),
-        Random.Range(CenterPoint.z - spawnRadius, CenterPoint.z + spawnRadius)
-    );
-    v.transform.SetPositionAndRotation(spawnPoint, v.transform.rotation);
-    v.transform.LookAt(CenterPoint);
+  private Vehicle SpawnVehicle(Vehicle.VehicleType type) {
+    Vehicle v = Instantiate<Vehicle>(_vehiclePrefabs[(int) type]);
+
+    v.Type = type;
+    MoveToRandomSpawnPoint(v.gameObject);
+    if (type == Vehicle.VehicleType.Airplane) {
+      v.transform.SetPositionAndRotation(
+        new(v.transform.position.x,
+            Random.Range(_envRadius / 10, _spawnRadius),
+            v.transform.position.z),
+        v.transform.rotation);
+    }
+
+    return v;
+  }
+
+  private void SpawnObstacles() {
+    GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+
+    foreach (GameObject obstacle in obstacles) {
+      Destroy(obstacle);
+    }
+    for (int i = 0; i < _gameData.NumObstacles; ++i) {
+      int type = Random.Range(0, _obstaclePrefabs.Length);
+      GameObject obj = Instantiate<GameObject>(_obstaclePrefabs[type]);
+
+      MoveToRandomSpawnPoint(obj);
+      if (type == 0) { // boulder
+        float multiplier = Random.Range(0.5f, 3.0f);
+
+        obj.transform.localScale *= multiplier;
+        obj.GetComponent<Rigidbody>().mass *= multiplier;
+        obj.transform.rotation = Random.rotationUniform;
+      }
+    }
+  }
+
+  private void MoveToRandomSpawnPoint(GameObject obj) {
+    obj.transform.SetPositionAndRotation(
+        new(Random.Range(Center.x - _spawnRadius, Center.x + _spawnRadius),
+            Center.y,
+            Random.Range(Center.z - _spawnRadius, Center.z + _spawnRadius)),
+        obj.transform.rotation);
+    obj.transform.LookAt(Center);
   }
 
   public bool OutOfBounds(Vector3 point) {
-    return point.y < 0 || Vector3.Distance(point, CenterPoint) > _envRadius;
-  }
-
-  public string GetPlayerName() {
-    return _gameData.PlayerName;
-  }
-
-  public void SetPlayerName(string value) {
-    if (value.Length > _maxNameLength) {
-      Debug.Log("Excessive name length: " + value.Length);
-      _gameData.PlayerName = value[.._maxNameLength];
-    } else {
-      _gameData.PlayerName = value;
-    }
+    return point.y < 0 || Vector3.Distance(point, Center) > _envRadius;
   }
 
   public Vehicle.VehicleType GetPlayerVehicleType() {
@@ -162,6 +191,22 @@ public class CarnageManager : MonoBehaviour {
     }
   }
 
+  public int GetNumObstacles() {
+    return _gameData.NumObstacles;
+  }
+
+  public void SetNumObstacles(int value) {
+    if (value < _minObstacles) {
+      Debug.Log("Invalid value for NumObstacles: " + value);
+      _gameData.NumObstacles = _minObstacles;
+    } else if (value > _maxObstacles) {
+      Debug.Log("Invalid value for NumObstacles: " + value);
+      _gameData.NumObstacles = _maxObstacles;
+    } else {
+      _gameData.NumObstacles = value;
+    }
+  }
+
   public void SaveData() {
     File.WriteAllText(_saveFile, JsonUtility.ToJson(_gameData));
   }
@@ -169,12 +214,7 @@ public class CarnageManager : MonoBehaviour {
   public void LoadData() {
     if (File.Exists(_saveFile)) {
       string json = File.ReadAllText(_saveFile);
-      _gameData = JsonUtility.FromJson<GameData>(json);
-    } else {
-      _gameData = new GameData();
-      _gameData.PlayerName = "";
-      _gameData.PlayerVehicleType = 0;
-      _gameData.NumEnemies = _defaultNumEnemies;
+      JsonUtility.FromJsonOverwrite(json, _gameData);
     }
   }
 

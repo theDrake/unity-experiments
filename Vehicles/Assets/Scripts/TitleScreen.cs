@@ -6,25 +6,30 @@ using UnityEditor;
 #endif
 
 public class TitleScreen : MonoBehaviour {
-  private TMP_InputField _nameInput;
+  private TMP_Dropdown _vehicleDropdown;
   private TextMeshProUGUI _numEnemiesText;
   private Slider _numEnemiesSlider;
-  private TMP_Dropdown _vehicleDropdown;
+  private TextMeshProUGUI _numObstaclesText;
+  private Slider _numObstaclesSlider;
 
   private void Start() {
-    _nameInput = GameObject.Find("Name Input").GetComponent<TMP_InputField>();
-    _numEnemiesText =
-        GameObject.Find("Enemies Number Text").GetComponent<TextMeshProUGUI>();
-    _numEnemiesSlider =
-        GameObject.Find("Enemies Slider").GetComponent<Slider>();
     _vehicleDropdown =
         GameObject.Find("Vehicle Dropdown").GetComponent<TMP_Dropdown>();
+    _numEnemiesText = GameObject.Find(
+        "Enemies Number Text").GetComponent<TextMeshProUGUI>();
+    _numEnemiesSlider = GameObject.Find(
+        "Enemies Slider").GetComponent<Slider>();
+    _numObstaclesText = GameObject.Find(
+        "Obstacles Number Text").GetComponent<TextMeshProUGUI>();
+    _numObstaclesSlider = GameObject.Find(
+        "Obstacles Slider").GetComponent<Slider>();
 
-    _nameInput.text = CarnageManager.Instance.GetPlayerName();
     _vehicleDropdown.value =
         (int) CarnageManager.Instance.GetPlayerVehicleType();
     _numEnemiesSlider.value = CarnageManager.Instance.GetNumEnemies();
     _numEnemiesText.text = _numEnemiesSlider.value.ToString();
+    _numObstaclesSlider.value = CarnageManager.Instance.GetNumObstacles();
+    _numObstaclesText.text = _numObstaclesSlider.value.ToString();
   }
 
   private void Update() {
@@ -34,10 +39,6 @@ public class TitleScreen : MonoBehaviour {
     }
   }
 
-  public void UpdatePlayerName() {
-    CarnageManager.Instance.SetPlayerName(_nameInput.text);
-  }
-
   public void UpdatePlayerVehicle() {
     CarnageManager.Instance.SetPlayerVehicleType(_vehicleDropdown.value);
   }
@@ -45,6 +46,11 @@ public class TitleScreen : MonoBehaviour {
   public void UpdateNumEnemies() {
     CarnageManager.Instance.SetNumEnemies((int) _numEnemiesSlider.value);
     _numEnemiesText.text = _numEnemiesSlider.value.ToString();
+  }
+
+  public void UpdateNumObstacles() {
+    CarnageManager.Instance.SetNumObstacles((int) _numObstaclesSlider.value);
+    _numObstaclesText.text = _numObstaclesSlider.value.ToString();
   }
 
   public void StartGame() {
