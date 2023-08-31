@@ -1,36 +1,35 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class PlayerController : MonoBehaviour {
   public float speed;
   public Text scoreText;
 
-  private int score;
-  private Rigidbody rb;
+  private int _score;
+  private Rigidbody _rb;
 
-  void Start() {
-    rb = GetComponent<Rigidbody>();
-    score = 0;
+  private void Start() {
+    _rb = GetComponent<Rigidbody>();
+    _score = 0;
     UpdateScoreText();
   }
 
-  void FixedUpdate() {
-    Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0.0f,
-                                   Input.GetAxis("Vertical"));
-    rb.AddForce(movement * speed);
+  private void FixedUpdate() {
+    Vector3 movement = new(Input.GetAxis("Horizontal"), 0,
+                           Input.GetAxis("Vertical"));
+    _rb.AddForce(movement * speed);
   }
 
-  void OnTriggerEnter(Collider other) {
+  private void OnTriggerEnter(Collider other) {
     //Destroy(other.gameObject);
     if (other.gameObject.CompareTag("Powerup")) {
       other.gameObject.SetActive(false);
-      score += 10;
+      _score += 10;
       UpdateScoreText();
     }
   }
 
-  void UpdateScoreText() {
-    scoreText.text = "Score: " + score.ToString();
+  private void UpdateScoreText() {
+    scoreText.text = "Score: " + _score.ToString();
   }
 }
