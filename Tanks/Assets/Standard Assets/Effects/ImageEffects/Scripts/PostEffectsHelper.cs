@@ -46,7 +46,7 @@ namespace UnityStandardAssets.ImageEffects
 
             float z1 = -dist;
 
-            for (int i = 0; i < material.passCount; i++)
+            for (int i = 0; i < material.passCount; ++i)
             {
                 material.SetPass(i);
 
@@ -85,7 +85,7 @@ namespace UnityStandardAssets.ImageEffects
             GL.PushMatrix();
             GL.LoadOrtho();
 
-            for (int i = 0; i < material.passCount; i++)
+            for (int i = 0; i < material.passCount; ++i)
             {
                 material.SetPass(i);
 
@@ -161,7 +161,7 @@ namespace UnityStandardAssets.ImageEffects
             GL.PushMatrix();
             GL.LoadOrtho();
 
-            for (int i = 0; i < material.passCount; i++)
+            for (int i = 0; i < material.passCount; ++i)
             {
                 material.SetPass(i);
 

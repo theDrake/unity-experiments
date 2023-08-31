@@ -23,19 +23,20 @@ public class CameraControl : MonoBehaviour {
 
   private void Move() {
     FindAveragePosition();
-    transform.position = Vector3.SmoothDamp(transform.position, m_DesiredPosition, ref m_MoveVelocity, m_DampTime);
+    transform.position = Vector3.SmoothDamp(transform.position,
+        m_DesiredPosition, ref m_MoveVelocity, m_DampTime);
   }
 
   private void FindAveragePosition() {
-    Vector3 averagePos = new Vector3();
+    Vector3 averagePos = new();
     int numTargets = 0;
 
-    for (int i = 0; i < m_Targets.Length; i++) {
+    for (int i = 0; i < m_Targets.Length; ++i) {
       if (!m_Targets[i].gameObject.activeSelf) {
         continue;
       }
       averagePos += m_Targets[i].position;
-      numTargets++;
+      ++numTargets;
     }
     if (numTargets > 0) {
       averagePos /= numTargets;
@@ -47,24 +48,23 @@ public class CameraControl : MonoBehaviour {
   private void Zoom() {
     float requiredSize = FindRequiredSize();
     m_Camera.orthographicSize = Mathf.SmoothDamp(m_Camera.orthographicSize,
-      requiredSize, ref m_ZoomSpeed, m_DampTime);
+        requiredSize, ref m_ZoomSpeed, m_DampTime);
   }
 
   private float FindRequiredSize() {
-    Vector3 desiredLocalPos =
-      transform.InverseTransformPoint(m_DesiredPosition);
+    Vector3 desiredLocalPos = transform.InverseTransformPoint(
+        m_DesiredPosition);
     float size = 0f;
 
-    for (int i = 0; i < m_Targets.Length; i++) {
+    for (int i = 0; i < m_Targets.Length; ++i) {
       if (!m_Targets[i].gameObject.activeSelf) {
         continue;
       }
-      Vector3 targetLocalPos =
-        transform.InverseTransformPoint(m_Targets[i].position);
+      Vector3 targetLocalPos = transform.InverseTransformPoint(
+          m_Targets[i].position);
       Vector3 desiredPosToTarget = targetLocalPos - desiredLocalPos;
       size = Mathf.Max(size, Mathf.Abs(desiredPosToTarget.y));
-      size = Mathf.Max(size,
-        Mathf.Abs(desiredPosToTarget.x) / m_Camera.aspect);
+      size = Mathf.Max(size, Mathf.Abs(desiredPosToTarget.x) / m_Camera.aspect);
     }
     size += m_ScreenEdgeBuffer;
     size = Mathf.Max(size, m_MinSize);

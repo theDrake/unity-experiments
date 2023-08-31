@@ -55,7 +55,7 @@ namespace UnityStandardAssets.ImageEffects
             Graphics.Blit (source,hrTex, depthFetchMaterial);
             Graphics.Blit (hrTex, lrTex1);
 
-            for(int i = 0; i < softness; i++)
+            for(int i = 0; i < softness; ++i)
 			{
                 RenderTexture lrTex2 = RenderTexture.GetTemporary (rtW/2, rtH/2, 0);
                 blurMaterial.SetVector ("offsets", new Vector4 (0.0f, spread * oneOverBaseSize, 0.0f, 0.0f));

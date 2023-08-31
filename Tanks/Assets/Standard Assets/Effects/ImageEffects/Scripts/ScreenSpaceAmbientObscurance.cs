@@ -80,7 +80,7 @@ namespace UnityStandardAssets.ImageEffects
                 //  instead with a bilat-upsample afterwards ...
             }
 
-            for (int i = 0; i < blurIterations; i++) {
+            for (int i = 0; i < blurIterations; ++i) {
                 aoMaterial.SetVector("_Axis", new Vector2(1.0f,0.0f));
                 tmpRt2 = RenderTexture.GetTemporary (rtW, rtH);
                 Graphics.Blit (tmpRt, tmpRt2, aoMaterial, 1);

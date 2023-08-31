@@ -30,7 +30,6 @@ public class TankShooting : MonoBehaviour {
 
   private void Update() {
     m_AimSlider.value = m_MinLaunchForce;
-
     if (Input.GetButtonDown(m_FireButton)) {
       m_Fired = false;
       m_CurrentLaunchForce = m_MinLaunchForce;
@@ -50,7 +49,7 @@ public class TankShooting : MonoBehaviour {
   private void Fire() {
     m_Fired = true;
     Rigidbody shellInstance = Instantiate(m_Shell, m_FireTransform.position,
-      m_FireTransform.rotation) as Rigidbody;
+        m_FireTransform.rotation) as Rigidbody;
     shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
     m_ShootingAudio.clip = m_FireClip;
     m_ShootingAudio.Play();

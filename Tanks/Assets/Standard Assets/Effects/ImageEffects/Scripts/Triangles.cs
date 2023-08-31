@@ -13,7 +13,7 @@ namespace UnityStandardAssets.ImageEffects
         {
             if (meshes == null)
                 return false;
-            for (int i = 0; i < meshes.Length; i++)
+            for (int i = 0; i < meshes.Length; ++i)
                 if (null == meshes[i])
                     return false;
 
@@ -25,7 +25,7 @@ namespace UnityStandardAssets.ImageEffects
             if (meshes == null)
                 return;
 
-            for (int i = 0; i < meshes.Length; i++)
+            for (int i = 0; i < meshes.Length; ++i)
             {
                 if (null != meshes[i])
                 {
@@ -74,7 +74,7 @@ namespace UnityStandardAssets.ImageEffects
             var uvs2 = new Vector2[triCount * 3];
             var tris = new int[triCount * 3];
 
-            for (int i = 0; i < triCount; i++)
+            for (int i = 0; i < triCount; ++i)
             {
                 int i3 = i * 3;
                 int vertexWithOffset = triOffset + i;

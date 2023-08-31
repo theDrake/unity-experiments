@@ -33,7 +33,6 @@ public class TankMovement : MonoBehaviour {
   private void Start() {
     m_MovementAxisName = "Vertical" + m_PlayerNumber;
     m_TurnAxisName = "Horizontal" + m_PlayerNumber;
-
     m_OriginalPitch = m_MovementAudio.pitch;
   }
 
@@ -61,7 +60,6 @@ public class TankMovement : MonoBehaviour {
         m_MovementAudio.Play();
       }
     }
-
   }
 
   private void FixedUpdate() {
@@ -71,7 +69,7 @@ public class TankMovement : MonoBehaviour {
 
   private void Move() {
     Vector3 movement = transform.forward * m_MovementInputValue * m_Speed *
-      Time.deltaTime;
+        Time.deltaTime;
 
     m_Rigidbody.MovePosition(m_Rigidbody.position + movement);
   }

@@ -80,7 +80,7 @@ namespace UnityStandardAssets.ImageEffects
 
             var passOffs= blurType == BlurType.Standard ? 0 : 2;
 
-            for(int i = 0; i < blurIterations; i++)
+            for(int i = 0; i < blurIterations; ++i)
 			{
                 fastBloomMaterial.SetVector ("_Parameter", new Vector4 (blurSize * widthMod + (i*1.0f), 0.0f, threshold, intensity));
 

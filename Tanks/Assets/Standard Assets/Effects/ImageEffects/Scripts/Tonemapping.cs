@@ -202,7 +202,7 @@ namespace UnityStandardAssets.ImageEffects
 
             int div = 2;
             var rts = new RenderTexture[downsample];
-            for (int i = 0; i < downsample; i++)
+            for (int i = 0; i < downsample; ++i)
             {
                 rts[i] = RenderTexture.GetTemporary(rtSquared.width/div, rtSquared.width/div, 0, rtFormat);
                 div *= 2;
@@ -214,7 +214,7 @@ namespace UnityStandardAssets.ImageEffects
             Graphics.Blit(rtSquared, rts[0], tonemapMaterial, 1);
             if (type == TonemapperType.AdaptiveReinhardAutoWhite)
             {
-                for (int i = 0; i < downsample - 1; i++)
+                for (int i = 0; i < downsample - 1; ++i)
                 {
                     Graphics.Blit(rts[i], rts[i + 1], tonemapMaterial, 9);
                     lumRt = rts[i + 1];
@@ -222,7 +222,7 @@ namespace UnityStandardAssets.ImageEffects
             }
             else if (type == TonemapperType.AdaptiveReinhard)
             {
-                for (int i = 0; i < downsample - 1; i++)
+                for (int i = 0; i < downsample - 1; ++i)
                 {
                     Graphics.Blit(rts[i], rts[i + 1]);
                     lumRt = rts[i + 1];
@@ -264,7 +264,7 @@ namespace UnityStandardAssets.ImageEffects
 
             // cleanup for adaptive
 
-            for (int i = 0; i < downsample; i++)
+            for (int i = 0; i < downsample; ++i)
             {
                 RenderTexture.ReleaseTemporary(rts[i]);
             }

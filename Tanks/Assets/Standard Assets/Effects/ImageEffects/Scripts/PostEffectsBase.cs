@@ -164,7 +164,7 @@ namespace UnityStandardAssets.ImageEffects {
       GL.PushMatrix();
       GL.LoadOrtho();
 
-      for (int i = 0; i < material.passCount; i++) {
+      for (int i = 0; i < material.passCount; ++i) {
         material.SetPass(i);
 
         float y1_; float y2_;

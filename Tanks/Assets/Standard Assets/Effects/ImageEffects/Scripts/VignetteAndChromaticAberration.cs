@@ -26,8 +26,8 @@ namespace UnityStandardAssets.ImageEffects
         public Shader vignetteShader;
         public Shader separableBlurShader;
         public Shader chromAberrationShader;
-        
-        
+
+
         private Material m_VignetteMaterial;
         private Material m_SeparableBlurMaterial;
         private Material m_ChromAberrationMaterial;
@@ -77,7 +77,7 @@ namespace UnityStandardAssets.ImageEffects
 
                     Graphics.Blit (source, color2A, m_ChromAberrationMaterial, 0);
 
-                    for(int i = 0; i < 2; i++)
+                    for(int i = 0; i < 2; ++i)
                     {	// maybe make iteration count tweakable
                         m_SeparableBlurMaterial.SetVector ("offsets",new Vector4 (0.0f, blurSpread * oneOverBaseSize, 0.0f, 0.0f));
                         RenderTexture color2B = RenderTexture.GetTemporary (rtW / 2, rtH / 2, 0, source.format);

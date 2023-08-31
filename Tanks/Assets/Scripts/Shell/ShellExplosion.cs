@@ -14,9 +14,8 @@ public class ShellExplosion : MonoBehaviour {
   }
 
   private void OnTriggerEnter(Collider other) {
-    // Find all the tanks near the shell and damage them.
     Collider[] colliders = Physics.OverlapSphere(transform.position,
-      m_ExplosionRadius, m_TankMask);
+                                                 m_ExplosionRadius, m_TankMask);
 
     for (int i = 0; i < colliders.Length; ++i) {
       Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody>();
@@ -24,7 +23,7 @@ public class ShellExplosion : MonoBehaviour {
         continue;
       }
       targetRigidbody.AddExplosionForce(m_ExplosionForce, transform.position,
-        m_ExplosionRadius);
+                                        m_ExplosionRadius);
       TankHealth targetHealth = targetRigidbody.GetComponent<TankHealth>();
       if (!targetHealth) {
         continue;
@@ -35,16 +34,14 @@ public class ShellExplosion : MonoBehaviour {
     m_ExplosionParticles.Play();
     m_ExplosionAudio.Play();
     Destroy(m_ExplosionParticles.gameObject,
-      m_ExplosionParticles.main.duration);
+            m_ExplosionParticles.main.duration);
     Destroy(gameObject);
   }
 
   private float CalculateDamage(Vector3 targetPosition) {
-    // Calculate amount of damage a target should take based on its position.
-    Vector3 explosionToTarget = targetPosition - transform.position;
-    float explosionDistance = explosionToTarget.magnitude;
+    float explosionDistance = (targetPosition - transform.position).magnitude;
     float relativeDistance = (m_ExplosionRadius - explosionDistance) /
-      m_ExplosionRadius;
+        m_ExplosionRadius;
 
     return Mathf.Max(0f, relativeDistance * m_MaxDamage);
   }

@@ -27,7 +27,7 @@ namespace UnityStandardAssets.ImageEffects
             if (meshes == null)
                 return;
 
-            for (int i = 0; i < meshes.Length; i++)
+            for (int i = 0; i < meshes.Length; ++i)
             {
                 if (null != meshes[i])
                 {
@@ -76,7 +76,7 @@ namespace UnityStandardAssets.ImageEffects
             var uvs2 = new Vector2[triCount * 4];
             var tris = new int[triCount * 6];
 
-            for (int i = 0; i < triCount; i++)
+            for (int i = 0; i < triCount; ++i)
             {
                 int i4 = i * 4;
                 int i6 = i * 6;

@@ -93,7 +93,7 @@ namespace UnityStandardAssets.ImageEffects
             DownSample4x (source, buffer);
 
             // Blur the small texture
-            for(int i = 0; i < iterations; i++)
+            for(int i = 0; i < iterations; ++i)
             {
                 RenderTexture buffer2 = RenderTexture.GetTemporary(rtW, rtH, 0);
                 FourTapCone (buffer, buffer2, i);
