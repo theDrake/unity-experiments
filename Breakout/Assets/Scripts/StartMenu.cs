@@ -1,9 +1,9 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 public class StartMenu : MonoBehaviour {
-  public static StartMenu Instance;
+  public static StartMenu Instance { get; private set; }
   public TMP_InputField Username;
 
   private void Awake() {

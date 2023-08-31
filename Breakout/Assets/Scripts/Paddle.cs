@@ -1,19 +1,19 @@
 using UnityEngine;
 
 public class Paddle : MonoBehaviour {
-  public float Speed = 2.0f;
-  public float MaxMovement = 2.0f;
+  private const float _speed = 4.0f;
+  private const float _boundary = 2.0f;
 
   void Update() {
     float input = Input.GetAxis("Horizontal");
-    Vector3 pos = transform.position;
+    Vector3 position = transform.position;
 
-    pos.x += input * Speed * Time.deltaTime;
-    if (pos.x > MaxMovement) {
-      pos.x = MaxMovement;
-    } else if (pos.x < -MaxMovement) {
-      pos.x = -MaxMovement;
+    position.x += input * _speed * Time.deltaTime;
+    if (position.x > _boundary) {
+      position.x = _boundary;
+    } else if (position.x < -_boundary) {
+      position.x = -_boundary;
     }
-    transform.position = pos;
+    transform.position = position;
   }
 }

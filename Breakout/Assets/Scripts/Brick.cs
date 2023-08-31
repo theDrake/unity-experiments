@@ -6,8 +6,7 @@ public class Brick : MonoBehaviour {
   public int PointValue;
 
   void Start() {
-    var renderer = GetComponentInChildren<Renderer>();
-    MaterialPropertyBlock block = new MaterialPropertyBlock();
+    MaterialPropertyBlock block = new();
 
     switch (PointValue) {
       case 1 :
@@ -23,7 +22,7 @@ public class Brick : MonoBehaviour {
         block.SetColor("_BaseColor", Color.red);
         break;
     }
-    renderer.SetPropertyBlock(block);
+    GetComponentInChildren<Renderer>().SetPropertyBlock(block);
   }
 
   private void OnCollisionEnter(Collision other) {
