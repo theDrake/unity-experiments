@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour {
   }
 
   private void SpawnAllTanks() {
+    Shuffle(_spawnPoints);
     for (int i = 0; i < _numTanks; ++i) {
       _tanks.Add(Instantiate(TankPrefab, _spawnPoints[i].position,
                             _spawnPoints[i].rotation).GetComponent<Tank>());
@@ -158,6 +159,13 @@ public class GameManager : MonoBehaviour {
   private void DisableTankControl() {
     foreach (Tank t in _tanks) {
       t.DisableControl();
+    }
+  }
+
+  public static void Shuffle<T>(List<T> list) {
+    for (int i = list.Count - 1; i > 0; --i) {
+      int j = Random.Range(0, i + 1);
+      (list[i], list[j]) = (list[j], list[i]);
     }
   }
 }
