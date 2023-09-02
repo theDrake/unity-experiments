@@ -36,11 +36,11 @@ public class CameraControl : MonoBehaviour {
     Vector3 averagePosition = new();
     int numTargets = 0;
 
-    for (int i = 0; i < Targets.Length; ++i) {
-      if (!Targets[i].gameObject.activeSelf) {
+    foreach (Transform t in Targets) {
+      if (!t.gameObject.activeSelf) {
         continue;
       }
-      averagePosition += Targets[i].position;
+      averagePosition += t.position;
       ++numTargets;
     }
     if (numTargets > 0) {
@@ -54,11 +54,11 @@ public class CameraControl : MonoBehaviour {
     Vector3 local = transform.InverseTransformPoint(_desiredPosition);
     float size = 0f;
 
-    for (int i = 0; i < Targets.Length; ++i) {
-      if (!Targets[i].gameObject.activeSelf) {
+    foreach (Transform t in Targets) {
+      if (!t.gameObject.activeSelf) {
         continue;
       }
-      Vector3 target = transform.InverseTransformPoint(Targets[i].position);
+      Vector3 target = transform.InverseTransformPoint(t.position);
       Vector3 desired = target - local;
 
       size = Mathf.Max(size, Mathf.Abs(desired.y));

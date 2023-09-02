@@ -15,21 +15,18 @@ public class Shell : MonoBehaviour {
   }
 
   private void OnTriggerEnter(Collider other) {
-    Collider[] colliders = Physics.OverlapSphere(transform.position,
-                                                 _explosionRadius, TankMask);
-
-    for (int i = 0; i < colliders.Length; ++i) {
-      Rigidbody target = colliders[i].GetComponent<Rigidbody>();
+    foreach (Collider c in Physics.OverlapSphere(transform.position,
+                                                 _explosionRadius, TankMask)) {
+      Rigidbody target = c.GetComponent<Rigidbody>();
       if (!target) {
         continue;
       }
       target.AddExplosionForce(_explosionForce, transform.position,
                                _explosionRadius);
-      TankHealth targetHealth = target.GetComponent<TankHealth>();
-      if (!targetHealth) {
-        continue;
+      Tank tank = target.GetComponent<Tank>();
+      if (tank) {
+        tank.TakeDamage(CalculateDamage(target.position));
       }
-      targetHealth.TakeDamage(CalculateDamage(target.position));
     }
     ExplosionParticles.transform.parent = null;
     ExplosionParticles.Play();

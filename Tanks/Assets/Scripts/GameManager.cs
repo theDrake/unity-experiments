@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,18 +8,24 @@ public class GameManager : MonoBehaviour {
   public CameraControl CameraControl;
   public Text MessageText;
   public GameObject TankPrefab;
-  public TankManager[] Tanks;
 
+  private List<Tank> _tanks = new();
+  private List<Transform> _spawnPoints = new();
+  private Tank _roundWinner;
+  private Tank _gameWinner;
   private const float _startDelay = 2.0f;
   private const float _endDelay = 2.0f;
   private const int _roundsToWin = 3;
-  private int _round;
   private WaitForSeconds _startWait;
   private WaitForSeconds _endWait;
-  private TankManager _roundWinner;
-  private TankManager _gameWinner;
+  private int _round;
+  private int _numTanks;
 
   private void Start() {
+    foreach (GameObject o in GameObject.FindGameObjectsWithTag("SpawnPoint")) {
+      _spawnPoints.Add(o.transform);
+    }
+    _numTanks = _spawnPoints.Count;
     _startWait = new(_startDelay);
     _endWait = new(_endDelay);
     SpawnAllTanks();
@@ -27,19 +34,18 @@ public class GameManager : MonoBehaviour {
   }
 
   private void SpawnAllTanks() {
-    for (int i = 0; i < Tanks.Length; ++i) {
-      Tanks[i].Instance = Instantiate(TankPrefab, Tanks[i].SpawnPoint.position,
-          Tanks[i].SpawnPoint.rotation) as GameObject;
-      Tanks[i].PlayerNumber = i + 1;
-      Tanks[i].Setup();
+    for (int i = 0; i < _numTanks; ++i) {
+      _tanks.Add(Instantiate(TankPrefab, _spawnPoints[i].position,
+                            _spawnPoints[i].rotation).GetComponent<Tank>());
+      _tanks[i].PlayerNum = i + 1;
     }
   }
 
   private void SetCameraTargets() {
-    Transform[] targets = new Transform[Tanks.Length];
+    Transform[] targets = new Transform[_numTanks];
 
-    for (int i = 0; i < targets.Length; ++i) {
-      targets[i] = Tanks[i].Instance.transform;
+    for (int i = 0; i < _numTanks; ++i) {
+      targets[i] = _tanks[i].transform;
     }
     CameraControl.Targets = targets;
   }
@@ -79,7 +85,7 @@ public class GameManager : MonoBehaviour {
     _roundWinner = null;
     _roundWinner = GetRoundWinner();
     if (_roundWinner != null) {
-      _roundWinner.Wins++;
+      ++_roundWinner.Wins;
     }
     _gameWinner = GetGameWinner();
     string message = EndMessage();
@@ -91,8 +97,8 @@ public class GameManager : MonoBehaviour {
   private bool OneTankLeft() {
     int numTanksLeft = 0;
 
-    for (int i = 0; i < Tanks.Length; ++i) {
-      if (Tanks[i].Instance.activeSelf) {
+    foreach (Tank t in _tanks) {
+      if (t.gameObject.activeSelf) {
         ++numTanksLeft;
       }
     }
@@ -100,20 +106,20 @@ public class GameManager : MonoBehaviour {
     return numTanksLeft <= 1;
   }
 
-  private TankManager GetRoundWinner() {
-    for (int i = 0; i < Tanks.Length; ++i) {
-      if (Tanks[i].Instance.activeSelf) {
-        return Tanks[i];
+  private Tank GetRoundWinner() {
+    foreach (Tank t in _tanks) {
+      if (t.gameObject.activeSelf) {
+        return t;
       }
     }
 
     return null;
   }
 
-  private TankManager GetGameWinner() {
-    for (int i = 0; i < Tanks.Length; ++i) {
-      if (Tanks[i].Wins == _roundsToWin) {
-        return Tanks[i];
+  private Tank GetGameWinner() {
+    foreach (Tank t in _tanks) {
+      if (t.Wins == _roundsToWin) {
+        return t;
       }
     }
 
@@ -127,8 +133,8 @@ public class GameManager : MonoBehaviour {
       message = _roundWinner.PlayerText + " WINS THE ROUND!";
     }
     message += "\n\n\n\n";
-    for (int i = 0; i < Tanks.Length; ++i) {
-      message += Tanks[i].PlayerText + ": " + Tanks[i].Wins + " WINS\n";
+    foreach (Tank t in _tanks) {
+      message += t.PlayerText + ": " + t.Wins + " WINS\n";
     }
     if (_gameWinner != null) {
       message = _gameWinner.PlayerText + " WINS THE GAME!";
@@ -138,20 +144,20 @@ public class GameManager : MonoBehaviour {
   }
 
   private void ResetAllTanks() {
-    for (int i = 0; i < Tanks.Length; ++i) {
-      Tanks[i].Reset();
+    foreach (Tank t in _tanks) {
+      t.Reset();
     }
   }
 
   private void EnableTankControl() {
-    for (int i = 0; i < Tanks.Length; ++i) {
-      Tanks[i].EnableControl();
+    foreach (Tank t in _tanks) {
+      t.EnableControl();
     }
   }
 
   private void DisableTankControl() {
-    for (int i = 0; i < Tanks.Length; ++i) {
-      Tanks[i].DisableControl();
+    foreach (Tank t in _tanks) {
+      t.DisableControl();
     }
   }
 }
