@@ -9,17 +9,17 @@ public class GameManager : MonoBehaviour {
   public Text MessageText;
   public GameObject TankPrefab;
 
-  private List<Tank> _tanks = new();
+  private static List<Tank> _tanks = new();
   private List<Transform> _spawnPoints = new();
   private Tank _roundWinner;
   private Tank _gameWinner;
-  private const float _startDelay = 2.0f;
+  private const float _startDelay = 1.0f;
   private const float _endDelay = 2.0f;
   private const int _roundsToWin = 3;
   private WaitForSeconds _startWait;
   private WaitForSeconds _endWait;
   private int _round;
-  private int _numTanks;
+  private static int _numTanks;
 
   private void Start() {
     foreach (GameObject o in GameObject.FindGameObjectsWithTag("SpawnPoint")) {
@@ -33,20 +33,45 @@ public class GameManager : MonoBehaviour {
     StartCoroutine(GameLoop());
   }
 
+  public static Tank FindTargetForTank(int tankNum) {
+    List<Tank> sublist = new();
+
+    for (int i = 0; i < _numTanks; ++i) {
+      if (i != tankNum - 1 && _tanks[i].gameObject.activeSelf) {
+        sublist.Add(_tanks[i]);
+      }
+    }
+    if (sublist.Count > 0) {
+      return sublist[Random.Range(0, sublist.Count)];
+    }
+
+    return null;
+  }
+
+  public static void ShuffleList<T>(List<T> list) {
+    int i, j;
+
+    for (i = list.Count - 1; i > 0; --i) {
+      j = Random.Range(0, i + 1);
+      (list[i], list[j]) = (list[j], list[i]);
+    }
+  }
+
   private void SpawnAllTanks() {
-    Shuffle(_spawnPoints);
+    _tanks.Clear();
+    ShuffleList(_spawnPoints);
     for (int i = 0; i < _numTanks; ++i) {
       _tanks.Add(Instantiate(TankPrefab, _spawnPoints[i].position,
-                            _spawnPoints[i].rotation).GetComponent<Tank>());
-      _tanks[i].PlayerNum = i + 1;
+                             _spawnPoints[i].rotation).GetComponent<Tank>());
+      _tanks[i].TankNum = i + 1;
     }
   }
 
   private void SetCameraTargets() {
-    Transform[] targets = new Transform[_numTanks];
+    Transform[] targets = new Transform[_tanks.Count];
 
-    for (int i = 0; i < _numTanks; ++i) {
-      targets[i] = _tanks[i].transform;
+    foreach (Tank t in _tanks) {
+      targets[t.TankNum - 1] = t.transform;
     }
     CameraControl.Targets = targets;
   }
@@ -131,14 +156,14 @@ public class GameManager : MonoBehaviour {
     string message = "DRAW!";
 
     if (_roundWinner != null) {
-      message = _roundWinner.PlayerText + " WINS THE ROUND!";
+      message = _roundWinner.Text + " WINS THE ROUND!";
     }
     message += "\n\n\n\n";
     foreach (Tank t in _tanks) {
-      message += t.PlayerText + ": " + t.Wins + " WINS\n";
+      message += t.Text + ": " + t.Wins + " WINS\n";
     }
     if (_gameWinner != null) {
-      message = _gameWinner.PlayerText + " WINS THE GAME!";
+      message = _gameWinner.Text + " WINS THE GAME!";
     }
 
     return message;
@@ -159,13 +184,6 @@ public class GameManager : MonoBehaviour {
   private void DisableTankControl() {
     foreach (Tank t in _tanks) {
       t.DisableControl();
-    }
-  }
-
-  public static void Shuffle<T>(List<T> list) {
-    for (int i = list.Count - 1; i > 0; --i) {
-      int j = Random.Range(0, i + 1);
-      (list[i], list[j]) = (list[j], list[i]);
     }
   }
 }
