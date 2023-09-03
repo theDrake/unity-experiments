@@ -41,7 +41,7 @@ public class Tank : MonoBehaviour {
   private const float _minLaunchForce = 15.0f;
   private const float _maxLaunchForce = 30.0f;
   private const float _maxChargeTime = 0.75f;
-  private const float _fireDelay = 0.25f; // seconds
+  private const float _fireDelay = 0.4f; // seconds
   private const float _pitchRange = 0.2f; // for audio variation
   private float _originalPitch;
   private float _movementInput;
