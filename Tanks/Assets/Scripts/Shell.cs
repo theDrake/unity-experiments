@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class Shell : MonoBehaviour {
-  public LayerMask TankMask;
+  public LayerMask ExplosionMask;
   public ParticleSystem ExplosionParticles;
   public AudioSource ExplosionAudio;
 
@@ -15,17 +15,21 @@ public class Shell : MonoBehaviour {
   }
 
   private void OnTriggerEnter(Collider other) {
-    foreach (Collider c in Physics.OverlapSphere(transform.position,
-                                                 _explosionRadius, TankMask)) {
-      Rigidbody target = c.GetComponent<Rigidbody>();
-      if (!target) {
-        continue;
-      }
-      target.AddExplosionForce(_explosionForce, transform.position,
-                               _explosionRadius);
-      Tank tank = target.GetComponent<Tank>();
-      if (tank) {
-        tank.TakeDamage(CalculateDamage(target.position));
+    const int maxColliders = 12;
+    int numColliders;
+    Collider[] colliders = new Collider[maxColliders];
+
+    numColliders = Physics.OverlapSphereNonAlloc(
+        transform.position, _explosionRadius, colliders, ExplosionMask);
+    for (int i = 0; i < numColliders; ++i) {
+      if (colliders[i].CompareTag("DestructibleEnvironment")) {
+        colliders[i].GetComponent<Destructible>().TakeDamage(CalculateDamage(
+            colliders[i].transform.position));
+      } else { // Tank
+        colliders[i].GetComponent<Rigidbody>().AddExplosionForce(
+            _explosionForce, transform.position, _explosionRadius);
+        colliders[i].GetComponent<Tank>().TakeDamage(CalculateDamage(
+            colliders[i].transform.position));
       }
     }
     ExplosionParticles.transform.parent = null;
