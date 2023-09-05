@@ -54,6 +54,7 @@ public class Tank : MonoBehaviour {
   private bool _fired;
   private bool _dead;
   private int _tankNum;
+  private const int _playerTankNum = 1;
 
   // NPC variables
   private Tank _target;
@@ -67,6 +68,9 @@ public class Tank : MonoBehaviour {
     _color = Random.ColorHSV();
     _rb = GetComponent<Rigidbody>();
     _canvas = GetComponentInChildren<Canvas>().gameObject;
+    if (_tankNum != _playerTankNum) {
+      _canvas.SetActive(false);
+    }
     _explosion = Instantiate(ExplosionPrefab).GetComponent<ParticleSystem>();
     _explosionAudio = _explosion.GetComponent<AudioSource>();
     _explosion.gameObject.SetActive(false);
@@ -80,7 +84,9 @@ public class Tank : MonoBehaviour {
     _target = null;
     _currentLaunchForce = AimSlider.value = _minLaunchForce;
     _health = _startingHealth;
-    SetHealthUI();
+    if (_tankNum == _playerTankNum) {
+      SetHealthUI();
+    }
   }
 
   private void Start() {
@@ -107,7 +113,7 @@ public class Tank : MonoBehaviour {
       return;
     }
     EngineAudio();
-    if (_tankNum == 1) {
+    if (_tankNum == _playerTankNum) {
       HandlePlayerBehavior();
     } else {
       HandleNpcBehavior();
@@ -120,20 +126,25 @@ public class Tank : MonoBehaviour {
 
   public void TakeDamage(float amount) {
     _health -= amount;
-    SetHealthUI();
     if (_health <= 0 && !_dead) {
       Explode();
+    } else if (_tankNum == _playerTankNum) {
+      SetHealthUI();
     }
   }
 
   public void DisableControl() {
     _controlEnabled = false;
-    _canvas.SetActive(false);
+    if (_tankNum == _playerTankNum) {
+      _canvas.SetActive(false);
+    }
   }
 
   public void EnableControl() {
     _controlEnabled = true;
-    _canvas.SetActive(true);
+    if (_tankNum == _playerTankNum) {
+      _canvas.SetActive(true);
+    }
   }
 
   public void Reset() {
