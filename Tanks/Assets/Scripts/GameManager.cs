@@ -9,8 +9,9 @@ public class GameManager : MonoBehaviour {
   public Text MessageText;
   public GameObject TankPrefab;
 
-  private static List<Tank> _tanks = new();
-  private List<Transform> _spawnPoints = new();
+  private readonly static List<Tank> _tanks = new();
+  private readonly List<Destructible> _destructibles = new();
+  private readonly List<Transform> _spawnPoints = new();
   private Tank _roundWinner;
   private Tank _gameWinner;
   private const float _startDelay = 1.0f;
@@ -24,6 +25,10 @@ public class GameManager : MonoBehaviour {
   private void Start() {
     foreach (GameObject o in GameObject.FindGameObjectsWithTag("SpawnPoint")) {
       _spawnPoints.Add(o.transform);
+    }
+    foreach (GameObject o in GameObject.FindGameObjectsWithTag(
+             "DestructibleEnvironment")) {
+      _destructibles.Add(o.GetComponent<Destructible>());
     }
     _numTanks = _spawnPoints.Count;
     _startWait = new(_startDelay);
@@ -90,6 +95,7 @@ public class GameManager : MonoBehaviour {
 
   private IEnumerator RoundStarting() {
     ResetAllTanks();
+    ResetAllDestructibles();
     DisableTankControl();
     CameraControl.SetStartPositionAndSize();
     MessageText.text = "ROUND " + ++_round;
@@ -172,6 +178,12 @@ public class GameManager : MonoBehaviour {
   private void ResetAllTanks() {
     foreach (Tank t in _tanks) {
       t.Reset();
+    }
+  }
+
+  private void ResetAllDestructibles() {
+    foreach (Destructible d in _destructibles) {
+      d.Reset();
     }
   }
 

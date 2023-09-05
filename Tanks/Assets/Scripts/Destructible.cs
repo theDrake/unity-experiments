@@ -5,6 +5,7 @@ public class Destructible : MonoBehaviour {
   private ParticleSystem _explosion;
   private AudioSource _explosionAudio;
   [SerializeField] private float _health = 500.0f;
+  private float _startingHealth;
   private bool _destroyed;
 
   private void Awake() {
@@ -12,6 +13,11 @@ public class Destructible : MonoBehaviour {
     _explosion = Instantiate(_explosionPrefab).GetComponent<ParticleSystem>();
     _explosionAudio = _explosion.GetComponent<AudioSource>();
     _explosion.gameObject.SetActive(false);
+    _startingHealth = _health;
+  }
+
+  private void OnEnable() {
+    _health = _startingHealth;
     _destroyed = false;
   }
 
@@ -24,6 +30,11 @@ public class Destructible : MonoBehaviour {
     if (_health <= 0 && !_destroyed) {
       Explode();
     }
+  }
+
+  public void Reset() {
+    gameObject.SetActive(false);
+    gameObject.SetActive(true);
   }
 
   private void Explode() {
