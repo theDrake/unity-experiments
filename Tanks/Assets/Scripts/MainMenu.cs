@@ -7,11 +7,10 @@ public class MainMenu : MonoBehaviour {
   public Slider TeamsSlider;
   public Slider TanksPerTeamSlider;
 
-  private const int _maxTanks = 8;
-
   public void UpdateTeams() {
     TeamsText.text = "Teams: " + TeamsSlider.value;
-    TanksPerTeamSlider.maxValue = _maxTanks / (int) TeamsSlider.value;
+    TanksPerTeamSlider.maxValue = GameManager.MaxTanks /
+        (int) TeamsSlider.value;
   }
 
   public void UpdateTanksPerTeam() {

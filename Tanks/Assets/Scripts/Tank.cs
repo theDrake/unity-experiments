@@ -3,16 +3,17 @@ using UnityEngine.UI;
 
 [System.Serializable]
 public class Tank : MonoBehaviour {
-  [HideInInspector] public int TankNum {
-    get { return _tankNum; }
+  [HideInInspector] public Color TankColor {
+    get { return _color; }
     set {
-      _tankNum = value;
-      Text = "<color=#" + ColorUtility.ToHtmlStringRGB(_color) + ">TANK " +
-          _tankNum + "</color>";
+      _color = value;
+      foreach (MeshRenderer r in GetComponentsInChildren<MeshRenderer>()) {
+        r.material.color = _color;
+      }
     }
   }
-  [HideInInspector] public int Wins;
-  [HideInInspector] public string Text;
+  [HideInInspector] public int TankNum;
+  [HideInInspector] public int TeamNum;
   public GameObject ExplosionPrefab;
   public Rigidbody Shell;
   public Transform FireTransform;
@@ -53,7 +54,6 @@ public class Tank : MonoBehaviour {
   private bool _controlEnabled;
   private bool _fired;
   private bool _dead;
-  private int _tankNum;
   private const int _playerTankNum = 1;
 
   // NPC variables
@@ -65,10 +65,9 @@ public class Tank : MonoBehaviour {
   private const float _minRetreatDistance = 6.0f;
 
   private void Awake() {
-    _color = Random.ColorHSV();
     _rb = GetComponent<Rigidbody>();
     _canvas = GetComponentInChildren<Canvas>().gameObject;
-    if (_tankNum != _playerTankNum) {
+    if (TankNum != _playerTankNum) {
       _canvas.SetActive(false);
     }
     _explosion = Instantiate(ExplosionPrefab).GetComponent<ParticleSystem>();
@@ -84,15 +83,12 @@ public class Tank : MonoBehaviour {
     _target = null;
     _currentLaunchForce = AimSlider.value = _minLaunchForce;
     _health = _startingHealth;
-    if (_tankNum == _playerTankNum) {
+    if (TankNum == _playerTankNum) {
       SetHealthUI();
     }
   }
 
   private void Start() {
-    foreach (MeshRenderer r in GetComponentsInChildren<MeshRenderer>()) {
-      r.material.color = _color;
-    }
     _originalPitch = MovementAudio.pitch;
     _chargeSpeed = (_maxLaunchForce - _minLaunchForce) / _maxChargeTime;
     _timeAtLastFire = Time.time;
@@ -113,7 +109,7 @@ public class Tank : MonoBehaviour {
       return;
     }
     EngineAudio();
-    if (_tankNum == _playerTankNum) {
+    if (TankNum == _playerTankNum) {
       HandlePlayerBehavior();
     } else {
       HandleNpcBehavior();
@@ -128,21 +124,21 @@ public class Tank : MonoBehaviour {
     _health -= amount;
     if (_health <= 0 && !_dead) {
       Explode();
-    } else if (_tankNum == _playerTankNum) {
+    } else if (TankNum == _playerTankNum) {
       SetHealthUI();
     }
   }
 
   public void DisableControl() {
     _controlEnabled = false;
-    if (_tankNum == _playerTankNum) {
+    if (TankNum == _playerTankNum) {
       _canvas.SetActive(false);
     }
   }
 
   public void EnableControl() {
     _controlEnabled = true;
-    if (_tankNum == _playerTankNum) {
+    if (TankNum == _playerTankNum) {
       _canvas.SetActive(true);
     }
   }
@@ -189,7 +185,7 @@ public class Tank : MonoBehaviour {
 
   private void HandleNpcBehavior() {
     if (!_target || _target._dead) {
-      _target = GameManager.FindTargetForTank(_tankNum);
+      _target = GameManager.FindTargetForTank(TankNum);
     } else {
       float distance = Vector3.Distance(transform.position,
                                         _target.transform.position);
