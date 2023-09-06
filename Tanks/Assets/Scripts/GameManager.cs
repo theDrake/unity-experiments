@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
   public Text MessageText;
   public GameObject TankPrefab;
 
+  private MainMenu _menu;
   private readonly static List<Tank> _tanks = new();
   private readonly List<Destructible> _destructibles = new();
   private readonly List<Transform> _spawnPoints = new();
@@ -20,6 +21,8 @@ public class GameManager : MonoBehaviour {
   private WaitForSeconds _startWait;
   private WaitForSeconds _endWait;
   private int _round;
+  private static int _numTeams = 2;
+  private static int _numTanksPerTeam = 4;
   private static int _numTanks;
 
   private void Start() {
@@ -30,9 +33,20 @@ public class GameManager : MonoBehaviour {
              "DestructibleEnvironment")) {
       _destructibles.Add(o.GetComponent<Destructible>());
     }
-    _numTanks = _spawnPoints.Count;
+    _menu = FindAnyObjectByType<MainMenu>();
+    _menu.TeamsSlider.value = _numTeams;
+    _menu.TanksPerTeamSlider.value = _numTanksPerTeam;
     _startWait = new(_startDelay);
     _endWait = new(_endDelay);
+    MessageText.gameObject.SetActive(false);
+  }
+
+  public void StartGame() {
+    _numTeams = (int) _menu.TeamsSlider.value;
+    _numTanksPerTeam = (int) _menu.TanksPerTeamSlider.value;
+    _numTanks = _numTeams * _numTanksPerTeam;
+    _menu.gameObject.SetActive(false);
+    MessageText.gameObject.SetActive(true);
     SpawnAllTanks();
     SetCameraTargets();
     StartCoroutine(GameLoop());
