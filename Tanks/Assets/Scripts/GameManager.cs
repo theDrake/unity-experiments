@@ -59,10 +59,6 @@ public class GameManager : MonoBehaviour {
     _numTanks = _numTeams * _numTanksPerTeam;
     _menu.gameObject.SetActive(false);
     MessageText.gameObject.SetActive(true);
-    for (int i = 0; i < _wins.Length; ++i) {
-      _wins[i] = 0;
-    }
-    _roundWinner = _gameWinner = 0;
     ShuffleList(_teamColors);
     SpawnAllTanks();
     SetCameraTargets();
@@ -185,7 +181,7 @@ public class GameManager : MonoBehaviour {
     }
     message += "\n\n\n\n";
     for (int i = 0; i < _numTeams; ++i) {
-      message += GetTeamText(i + 1) + ": " + _wins[i] + " WINS\n";
+      message += GetTeamText(i + 1) + ": " + _wins[i] + "\n";
     }
     if (_gameWinner > 0) {
       message = GetTeamText(_gameWinner) + " WINS THE GAME!";

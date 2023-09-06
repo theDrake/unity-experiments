@@ -42,12 +42,14 @@ public class Tank : MonoBehaviour {
   private const float _minLaunchForce = 15.0f;
   private const float _maxLaunchForce = 30.0f;
   private const float _maxChargeTime = 0.75f;
+  private const float _chargeSpeed = (_maxLaunchForce - _minLaunchForce) /
+      _maxChargeTime;
   private const float _fireDelay = 0.5f; // seconds
   private const float _pitchRange = 0.2f; // for audio variation
-  private float _originalPitch;
+  private float _engineIdlingPitch;
+  private float _engineDrivingPitch;
   private float _movementInput;
   private float _turnInput;
-  private float _chargeSpeed;
   private float _currentLaunchForce;
   private float _timeAtLastFire;
   private float _health;
@@ -67,34 +69,24 @@ public class Tank : MonoBehaviour {
   private void Awake() {
     _rb = GetComponent<Rigidbody>();
     _canvas = GetComponentInChildren<Canvas>().gameObject;
-    if (TankNum != _playerTankNum) {
-      _canvas.SetActive(false);
-    }
     _explosion = Instantiate(ExplosionPrefab).GetComponent<ParticleSystem>();
     _explosionAudio = _explosion.GetComponent<AudioSource>();
     _explosion.gameObject.SetActive(false);
     _startingPosition = transform.position;
     _startingRotation = transform.rotation;
+    _engineIdlingPitch = Random.Range(MovementAudio.pitch - _pitchRange,
+                                      MovementAudio.pitch);
+    _engineDrivingPitch = Random.Range(MovementAudio.pitch,
+                                       MovementAudio.pitch + _pitchRange);
   }
 
   private void OnEnable() {
+    _timeAtLastFire = Time.time;
     _rb.isKinematic = _controlEnabled = _dead = false;
     _movementInput = _turnInput = 0;
     _target = null;
     _currentLaunchForce = AimSlider.value = _minLaunchForce;
     _health = _startingHealth;
-    if (TankNum == _playerTankNum) {
-      SetHealthUI();
-    }
-  }
-
-  private void Start() {
-    _originalPitch = MovementAudio.pitch;
-    _chargeSpeed = (_maxLaunchForce - _minLaunchForce) / _maxChargeTime;
-    _timeAtLastFire = Time.time;
-    // _movementAxis = "Vertical" + TankNum;
-    // _turnAxis = "Horizontal" + TankNum;
-    // _fireButton = "Fire" + TankNum;
   }
 
   private void FixedUpdate() {
@@ -105,14 +97,13 @@ public class Tank : MonoBehaviour {
   }
 
   private void Update() {
-    if (!_controlEnabled) {
-      return;
-    }
-    EngineAudio();
-    if (TankNum == _playerTankNum) {
-      HandlePlayerBehavior();
-    } else {
-      HandleNpcBehavior();
+    if (_controlEnabled) {
+      if (TankNum == _playerTankNum) {
+        HandlePlayerBehavior();
+      } else {
+        HandleNpcBehavior();
+      }
+      UpdateEngineAudio();
     }
   }
 
@@ -131,16 +122,17 @@ public class Tank : MonoBehaviour {
 
   public void DisableControl() {
     _controlEnabled = false;
+    MovementAudio.Stop();
     if (TankNum == _playerTankNum) {
+      SetHealthUI();
+    } else {
       _canvas.SetActive(false);
     }
   }
 
   public void EnableControl() {
     _controlEnabled = true;
-    if (TankNum == _playerTankNum) {
-      _canvas.SetActive(true);
-    }
+    PlayIdlingAudio();
   }
 
   public void Reset() {
@@ -228,20 +220,30 @@ public class Tank : MonoBehaviour {
         (distance <= _maxFireDistanceFar && distance >= _minFireDistanceFar);
   }
 
-  private void EngineAudio() {
-    if (Mathf.Abs(_movementInput) < 0.1f && Mathf.Abs(_turnInput) < 1.0f) {
-      if (MovementAudio.clip == EngineDriving) {
-        MovementAudio.clip = EngineIdling;
-        MovementAudio.pitch = Random.Range(_originalPitch - _pitchRange,
-                                           _originalPitch + _pitchRange);
-        MovementAudio.Play();
+  private void UpdateEngineAudio() {
+    if (Moving()) {
+      if (MovementAudio.clip == EngineIdling) {
+        PlayDrivingAudio();
       }
-    } else if (MovementAudio.clip == EngineIdling) {
-      MovementAudio.clip = EngineDriving;
-      MovementAudio.pitch = Random.Range(_originalPitch - _pitchRange,
-                                         _originalPitch + _pitchRange);
-      MovementAudio.Play();
+    } else if (MovementAudio.clip == EngineDriving) {
+      PlayIdlingAudio();
     }
+  }
+
+  private bool Moving() {
+    return Mathf.Abs(_movementInput) > 0.1f || Mathf.Abs(_turnInput) == 1.0f;
+  }
+
+  private void PlayIdlingAudio() {
+    MovementAudio.clip = EngineIdling;
+    MovementAudio.pitch = _engineIdlingPitch;
+    MovementAudio.Play();
+  }
+
+  private void PlayDrivingAudio() {
+    MovementAudio.clip = EngineDriving;
+    MovementAudio.pitch = _engineDrivingPitch;
+    MovementAudio.Play();
   }
 
   private void SetHealthUI() {
