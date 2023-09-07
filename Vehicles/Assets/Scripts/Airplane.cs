@@ -1,6 +1,5 @@
 using UnityEngine;
 
-// INHERITANCE
 public class Airplane : Vehicle {
   [SerializeField] protected Transform _propeller;
   protected float _forwardSpeed = 28.0f;
@@ -12,13 +11,12 @@ public class Airplane : Vehicle {
     _propeller.Rotate(0, 0, _propellerSpeed);
   }
 
-  // POLYMORPHISM
   public override void Move(float verticalInput, float horizontalInput) {
     if (Health <= 0) {
       return;
     }
     if (transform.position.y > _yMin &&
-        !CarnageManager.Instance.OutOfBounds(transform.position)) {
+        !GameManager.Instance.OutOfBounds(transform.position)) {
       transform.Translate(_forwardSpeed * Time.deltaTime * Vector3.forward);
     }
     transform.Rotate(_rotationSpeed * verticalInput * Time.deltaTime *

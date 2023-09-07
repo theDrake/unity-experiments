@@ -36,7 +36,7 @@ public class CarnageCanvas : MonoBehaviour {
 
   public static void DecrementNumEnemies() {
     SetNumEnemies(_numEnemies - 1);
-    if (_numEnemies <= 0 && CarnageManager.Instance.Victorious()) {
+    if (_numEnemies <= 0 && GameManager.Instance.Victorious()) {
       _victoryText.SetActive(true);
     }
   }

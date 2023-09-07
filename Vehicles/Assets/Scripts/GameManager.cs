@@ -2,9 +2,8 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CarnageManager : MonoBehaviour {
-  // ENCAPSULATION
-  public static CarnageManager Instance { get; private set; }
+public class GameManager : MonoBehaviour {
+  public static GameManager Instance { get; private set; }
   public readonly Vector3 Center = new(0.0f, 2.0f, 175.0f);
   [System.Serializable] private class GameData {
     public Vehicle.VehicleType PlayerVehicleType;
@@ -60,7 +59,6 @@ public class CarnageManager : MonoBehaviour {
     }
   }
 
-  // ABSTRACTION
   public void StartGame() {
     SaveData();
     SpawnPlayer();
@@ -141,11 +139,11 @@ public class CarnageManager : MonoBehaviour {
 
       MoveToRandomSpawnPoint(obj);
       if (type == 0) { // boulder
-        float multiplier = Random.Range(0.5f, 3.0f);
+        float multiplier = Random.Range(1.0f, 5.0f);
 
         obj.transform.localScale *= multiplier;
         obj.GetComponent<Rigidbody>().mass *= multiplier;
-        obj.transform.rotation = Random.rotationUniform;
+        obj.transform.rotation = Random.rotation;
       }
     }
   }

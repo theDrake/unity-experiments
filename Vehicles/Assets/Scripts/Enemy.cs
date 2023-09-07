@@ -1,11 +1,9 @@
 using UnityEngine;
 
-// INHERITANCE
 public class Enemy : GameCharacter {
   protected Vehicle _target;
   protected Camera _camera;
 
-  // POLYMORPHISM
   protected override void Start() {
     _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
     base.Start();
@@ -20,11 +18,8 @@ public class Enemy : GameCharacter {
       FindNewTarget();
     }
     _vehicle.SetHealthBarRotation(_camera.transform.rotation);
-    // transform.Translate(Vector3.forward * Time.deltaTime * _forwardSpeed);
-    // transform.LookAt(_target.transform.position);
   }
 
-  // ABSTRACTION
   public virtual void FindNewTarget() {
     Vehicle[] vehicles = FindObjectsByType<Vehicle>(FindObjectsSortMode.None);
     int i = Random.Range(0, vehicles.Length);

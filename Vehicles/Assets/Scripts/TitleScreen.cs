@@ -24,11 +24,10 @@ public class TitleScreen : MonoBehaviour {
     _numObstaclesSlider = GameObject.Find(
         "Obstacles Slider").GetComponent<Slider>();
 
-    _vehicleDropdown.value =
-        (int) CarnageManager.Instance.GetPlayerVehicleType();
-    _numEnemiesSlider.value = CarnageManager.Instance.GetNumEnemies();
+    _vehicleDropdown.value = (int) GameManager.Instance.GetPlayerVehicleType();
+    _numEnemiesSlider.value = GameManager.Instance.GetNumEnemies();
     _numEnemiesText.text = _numEnemiesSlider.value.ToString();
-    _numObstaclesSlider.value = CarnageManager.Instance.GetNumObstacles();
+    _numObstaclesSlider.value = GameManager.Instance.GetNumObstacles();
     _numObstaclesText.text = _numObstaclesSlider.value.ToString();
   }
 
@@ -40,25 +39,25 @@ public class TitleScreen : MonoBehaviour {
   }
 
   public void UpdatePlayerVehicle() {
-    CarnageManager.Instance.SetPlayerVehicleType(_vehicleDropdown.value);
+    GameManager.Instance.SetPlayerVehicleType(_vehicleDropdown.value);
   }
 
   public void UpdateNumEnemies() {
-    CarnageManager.Instance.SetNumEnemies((int) _numEnemiesSlider.value);
+    GameManager.Instance.SetNumEnemies((int) _numEnemiesSlider.value);
     _numEnemiesText.text = _numEnemiesSlider.value.ToString();
   }
 
   public void UpdateNumObstacles() {
-    CarnageManager.Instance.SetNumObstacles((int) _numObstaclesSlider.value);
+    GameManager.Instance.SetNumObstacles((int) _numObstaclesSlider.value);
     _numObstaclesText.text = _numObstaclesSlider.value.ToString();
   }
 
   public void StartGame() {
-    CarnageManager.Instance.StartGame();
+    GameManager.Instance.StartGame();
   }
 
   public void Exit() {
-    CarnageManager.Instance.SaveData();
+    GameManager.Instance.SaveData();
 #if UNITY_EDITOR
     EditorApplication.ExitPlaymode();
 // #else

@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Vehicle : MonoBehaviour {
-  // ENCAPSULATION
   public enum VehicleType {
     Car,
     Truck,
@@ -40,15 +39,13 @@ public class Vehicle : MonoBehaviour {
   }
 
   protected virtual void FixedUpdate() {
-    if (CarnageManager.Instance.OutOfBounds(transform.position)) {
+    if (GameManager.Instance.OutOfBounds(transform.position)) {
       _rigidBody.Sleep();
       transform.position = Vector3.Lerp(transform.position,
-                                        CarnageManager.Instance.Center,
-                                        0.0001f);
+                                        GameManager.Instance.Center, 0.0001f);
     }
   }
 
-  // ABSTRACTION
   public virtual void Move(float verticalInput, float horizontalInput) {
     if (Health <= 0) {
       return;
