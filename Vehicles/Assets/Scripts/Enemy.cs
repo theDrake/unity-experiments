@@ -12,7 +12,7 @@ public class Enemy : GameCharacter {
   protected virtual void FixedUpdate() {
     if (Dead()) {
       return;
-    } else if (_target && _target.Health > 0) {
+    } else if (_target && _target.Health > 0 && Random.Range(0, 500) > 0) {
       _vehicle.MoveToward(_target.transform.position);
     } else {
       FindNewTarget();

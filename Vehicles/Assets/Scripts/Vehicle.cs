@@ -25,14 +25,16 @@ public class Vehicle : MonoBehaviour {
   [SerializeField] protected List<Axle> _axleList;
   protected float _maxMotorTorque = 1200.0f;
   protected float _maxSteeringAngle = 45.0f;
+  protected float _maxHealth;
   protected Rigidbody _rigidBody;
   protected Slider _healthBar;
 
   protected virtual void Start() {
     _rigidBody = GetComponent<Rigidbody>();
     _healthBar = GetComponentInChildren<Slider>();
-    Health = _rigidBody.mass;
-    UpdateHealthBar();
+    _maxHealth = _rigidBody.mass * 20.0f;
+    Health = _maxHealth;
+    UpdateHealth();
     FirstPersonCameraOffset = new(_healthBar.transform.localPosition.x,
                                   _healthBar.transform.localPosition.y - 1.25f,
                                   _healthBar.transform.localPosition.z);
@@ -82,27 +84,32 @@ public class Vehicle : MonoBehaviour {
     return _rigidBody.velocity.magnitude;
   }
 
-  protected virtual void OnCollisionEnter(Collision collision) {
-    if (Health <= 0 || collision.collider.CompareTag("Harmless")) {
-      return;
+  protected virtual void OnCollisionEnter(Collision c) {
+    if (Health > 0) {
+      UpdateHealth(-c.impulse.magnitude);
     }
-    Health -= collision.impulse.magnitude / 10;
-    UpdateHealthBar();
-    if (Health <= 0) {
+  }
+
+  protected virtual void OnCollisionStay(Collision c) {
+    if (Health > 0) {
+      UpdateHealth(-1.0f);
+    }
+  }
+
+  protected virtual void UpdateVisualWheel(WheelCollider c) {
+    if (c.transform.childCount > 0) {
+      c.GetWorldPose(out Vector3 position, out Quaternion rotation);
+      c.transform.GetChild(0).SetPositionAndRotation(position, rotation);
+    }
+  }
+
+  protected virtual void UpdateHealth(float adjustment=0) {
+    Health += adjustment;
+    if (Health > 0) {
+      _healthBar.value = Health / _maxHealth;
+    } else {
       Explode();
     }
-  }
-
-  protected virtual void UpdateVisualWheel(WheelCollider collider) {
-    if (collider.transform.childCount == 0) {
-      return;
-    }
-    collider.GetWorldPose(out Vector3 position, out Quaternion rotation);
-    collider.transform.GetChild(0).SetPositionAndRotation(position, rotation);
-  }
-
-  protected virtual void UpdateHealthBar() {
-    _healthBar.value = Health / _rigidBody.mass;
   }
 
   public virtual void SetHealthBarRotation(Quaternion rotation) {
