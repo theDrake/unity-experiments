@@ -4,21 +4,18 @@ using UnityEngine;
 public class CarnageCanvas : MonoBehaviour {
   private static TextMeshProUGUI _speedText;
   private static TextMeshProUGUI _enemiesText;
-  private static GameObject _victoryText;
-  private static GameObject _gameOverText;
+  private static TextMeshProUGUI _gameOverText;
   private static Vehicle _player;
   private static int _numEnemies;
 
   private void Start() {
     _player = FindAnyObjectByType<Player>().GetComponent<Vehicle>();
-    _victoryText = GameObject.Find("Victory Text");
-    _gameOverText = GameObject.Find("Game Over Text");
-    _victoryText.SetActive(false);
-    _gameOverText.SetActive(false);
+    _gameOverText = GameObject.Find(
+        "Game Over Text").GetComponent<TextMeshProUGUI>();
+    _gameOverText.gameObject.SetActive(false);
     _speedText = GameObject.Find("Speed Text").GetComponent<TextMeshProUGUI>();
     _enemiesText = GameObject.Find(
         "Enemies Text").GetComponent<TextMeshProUGUI>();
-    SetNumEnemies(0);
   }
 
   private void Update() {
@@ -28,21 +25,32 @@ public class CarnageCanvas : MonoBehaviour {
         " kph";
   }
 
-  public static void SetNumEnemies(int n) {
-    _numEnemies = n;
+  public static void UpdateNumEnemies(int adjustment=0) {
+    _numEnemies += adjustment;
     _enemiesText.text = "Enemies: " + _numEnemies;
-    _victoryText.SetActive(false);
-  }
-
-  public static void DecrementNumEnemies() {
-    SetNumEnemies(_numEnemies - 1);
     if (_numEnemies <= 0 && GameManager.Instance.Victorious()) {
-      _victoryText.SetActive(true);
+      ShowVictory();
     }
   }
 
   public static void ShowGameOver() {
-    _gameOverText.SetActive(true);
+    _gameOverText.text = "Game over!";
+    _gameOverText.gameObject.SetActive(true);
+  }
+
+  public static void ShowVictory() {
+    _gameOverText.text = "You win!";
+    _gameOverText.gameObject.SetActive(true);
+  }
+
+  public void PlayAgain() {
+    _numEnemies = 0;
+    _gameOverText.gameObject.SetActive(false);
+    GameManager.Instance.StartGame();
+  }
+
+  public void ReturnToMenu() {
+    GameManager.Instance.ReturnToTitleScreen();
   }
 
   private float GetMph(float n) {

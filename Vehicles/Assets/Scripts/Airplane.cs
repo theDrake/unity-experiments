@@ -1,11 +1,12 @@
 using UnityEngine;
 
 public class Airplane : Vehicle {
+  protected const float _yMin = 1.0f;
+
   [SerializeField] protected Transform _propeller;
   protected float _forwardSpeed = 28.0f;
   protected float _rotationSpeed = 140.0f;
   protected float _propellerSpeed = 31.0f;
-  protected const float _yMin = 1.0f;
 
   protected virtual void Update() {
     _propeller.Rotate(0, 0, _propellerSpeed);
@@ -43,9 +44,9 @@ public class Airplane : Vehicle {
     return _forwardSpeed;
   }
 
-  protected override void Explode() {
-    _rigidBody.useGravity = true;
-    _propellerSpeed /= 10;
-    base.Explode();
-  }
+  // protected override void Explode() {
+  //   _rigidBody.useGravity = true;
+  //   _propellerSpeed /= 10;
+  //   base.Explode();
+  // }
 }

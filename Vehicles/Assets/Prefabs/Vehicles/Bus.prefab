@@ -235,6 +235,8 @@ MonoBehaviour:
     RightWheel: {fileID: 6367827974080582603}
     AttachedToMotor: 0
     ProvidesSteering: 0
+  _explosion: {fileID: 198917022394846920, guid: e1b08032bec16ba4eb1ae23cbd572664, type: 3}
+  _smoke: {fileID: 198791558892717060, guid: 73767e07adddc394d82b994801f89bbb, type: 3}
 --- !u!1 &150944
 GameObject:
   m_ObjectHideFlags: 0

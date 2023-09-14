@@ -12,9 +12,6 @@ public class Vehicle : MonoBehaviour {
     Airplane,
     NumVehicleTypes
   }
-  public VehicleType Type;
-  public float Health { get; protected set; }
-  public Vector3 FirstPersonCameraOffset { get; protected set; }
 
   [System.Serializable] protected class Axle {
     public WheelCollider LeftWheel;
@@ -22,12 +19,18 @@ public class Vehicle : MonoBehaviour {
     public bool AttachedToMotor;
     public bool ProvidesSteering;
   }
+
+  public VehicleType Type;
+  public Vector3 FirstPersonCameraOffset { get; protected set; }
+  public float Health { get; protected set; }
+
   [SerializeField] protected List<Axle> _axleList;
+  [SerializeField] protected ParticleSystem _explosion;
+  protected Rigidbody _rigidBody;
+  protected Slider _healthBar;
   protected float _maxMotorTorque = 1200.0f;
   protected float _maxSteeringAngle = 45.0f;
   protected float _maxHealth;
-  protected Rigidbody _rigidBody;
-  protected Slider _healthBar;
 
   protected virtual void Start() {
     _rigidBody = GetComponent<Rigidbody>();
@@ -84,15 +87,13 @@ public class Vehicle : MonoBehaviour {
     return _rigidBody.velocity.magnitude;
   }
 
+  public virtual void SetHealthBarRotation(Quaternion rotation) {
+    _healthBar.transform.rotation = rotation;
+  }
+
   protected virtual void OnCollisionEnter(Collision c) {
     if (Health > 0) {
       UpdateHealth(-c.impulse.magnitude);
-    }
-  }
-
-  protected virtual void OnCollisionStay(Collision c) {
-    if (Health > 0) {
-      UpdateHealth(-1.0f);
     }
   }
 
@@ -112,16 +113,15 @@ public class Vehicle : MonoBehaviour {
     }
   }
 
-  public virtual void SetHealthBarRotation(Quaternion rotation) {
-    _healthBar.transform.rotation = rotation;
-  }
-
   protected virtual void Explode() {
-    _healthBar.gameObject.SetActive(false);
+    // _healthBar.gameObject.SetActive(false);
     if (GetComponent<Player>()) {
       CarnageCanvas.ShowGameOver();
     } else {
-      CarnageCanvas.DecrementNumEnemies();
+      CarnageCanvas.UpdateNumEnemies(-1);
     }
+    Instantiate<ParticleSystem>(_explosion, transform.position,
+                                transform.rotation);
+    gameObject.SetActive(false);
   }
 }

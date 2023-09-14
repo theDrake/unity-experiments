@@ -8,10 +8,10 @@ public class GameCharacter : MonoBehaviour {
   }
 
   public virtual bool Alive() {
-    return _vehicle.Health > 0;
+    return _vehicle && _vehicle.gameObject.activeSelf;
   }
 
   public virtual bool Dead() {
-    return _vehicle.Health <= 0;
+    return !Alive();
   }
 }

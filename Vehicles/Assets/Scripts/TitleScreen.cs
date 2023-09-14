@@ -8,8 +8,8 @@ using UnityEditor;
 public class TitleScreen : MonoBehaviour {
   private TMP_Dropdown _vehicleDropdown;
   private TextMeshProUGUI _numEnemiesText;
-  private Slider _numEnemiesSlider;
   private TextMeshProUGUI _numObstaclesText;
+  private Slider _numEnemiesSlider;
   private Slider _numObstaclesSlider;
 
   private void Start() {
