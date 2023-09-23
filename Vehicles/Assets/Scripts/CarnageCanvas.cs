@@ -8,7 +8,8 @@ public class CarnageCanvas : MonoBehaviour {
   private static Vehicle _player;
   private static int _numEnemies;
 
-  private void Start() {
+  private void Awake() {
+    _numEnemies = 0;
     _player = FindAnyObjectByType<Player>().GetComponent<Vehicle>();
     _gameOverText = GameObject.Find(
         "Game Over Text").GetComponent<TextMeshProUGUI>();
