@@ -13,9 +13,6 @@ public class Airplane : Vehicle {
   }
 
   public override void Move(float verticalInput, float horizontalInput) {
-    if (Health <= 0) {
-      return;
-    }
     if (transform.position.y > _yMin &&
         !GameManager.Instance.OutOfBounds(transform.position)) {
       transform.Translate(_forwardSpeed * Time.deltaTime * Vector3.forward);
@@ -27,9 +24,6 @@ public class Airplane : Vehicle {
   }
 
   public override void MoveToward(Vector3 target) {
-    if (Health <= 0) {
-      return;
-    }
     transform.rotation = Quaternion.Lerp(transform.rotation,
         Quaternion.LookRotation(target - transform.position, Vector3.up),
         Time.deltaTime);
@@ -37,10 +31,9 @@ public class Airplane : Vehicle {
   }
 
   public override float GetSpeed() {
-    if (Health <= 0) {
-      return base.GetSpeed();
-    }
-
+    // if (Health <= 0) {
+    //   return base.GetSpeed();
+    // }
     return _forwardSpeed;
   }
 

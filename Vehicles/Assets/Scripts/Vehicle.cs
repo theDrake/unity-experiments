@@ -28,11 +28,11 @@ public class Vehicle : MonoBehaviour {
   [SerializeField] protected ParticleSystem _explosion;
   protected Rigidbody _rigidBody;
   protected Slider _healthBar;
-  protected float _maxMotorTorque = 1200.0f;
+  protected float _maxMotorTorque = 1500.0f;
   protected float _maxSteeringAngle = 45.0f;
   protected float _maxHealth;
 
-  protected virtual void Start() {
+  protected virtual void Awake() {
     _rigidBody = GetComponent<Rigidbody>();
     _healthBar = GetComponentInChildren<Slider>();
     _maxHealth = _rigidBody.mass * 20.0f;
@@ -51,10 +51,12 @@ public class Vehicle : MonoBehaviour {
     }
   }
 
+  protected virtual void LateUpdate() {
+    _healthBar.transform.rotation =
+        CameraController.Instance.transform.rotation;
+  }
+
   public virtual void Move(float verticalInput, float horizontalInput) {
-    if (Health <= 0) {
-      return;
-    }
     float motorTorque = _maxMotorTorque * verticalInput;
     float steerAngle = _maxSteeringAngle * horizontalInput;
 
@@ -73,9 +75,6 @@ public class Vehicle : MonoBehaviour {
   }
 
   public virtual void MoveToward(Vector3 target) {
-    if (Health <= 0) {
-      return;
-    }
     float verticalInput = 1.0f;
     float horizontalInput =
         transform.InverseTransformPoint(target).normalized.x;
@@ -87,14 +86,8 @@ public class Vehicle : MonoBehaviour {
     return _rigidBody.velocity.magnitude;
   }
 
-  public virtual void SetHealthBarRotation(Quaternion rotation) {
-    _healthBar.transform.rotation = rotation;
-  }
-
   protected virtual void OnCollisionEnter(Collision c) {
-    if (Health > 0) {
-      UpdateHealth(-c.impulse.magnitude);
-    }
+    UpdateHealth(-c.impulse.magnitude);
   }
 
   protected virtual void UpdateVisualWheel(WheelCollider c) {
@@ -114,9 +107,9 @@ public class Vehicle : MonoBehaviour {
   }
 
   protected virtual void Explode() {
-    // _healthBar.gameObject.SetActive(false);
     if (GetComponent<Player>()) {
       CarnageCanvas.ShowGameOver();
+      CameraController.Instance.FocalObject = null;
     } else {
       CarnageCanvas.UpdateNumEnemies(-1);
     }

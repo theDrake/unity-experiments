@@ -70,13 +70,12 @@ public class GameManager : MonoBehaviour {
   }
 
   public bool Victorious() {
-    if (FindAnyObjectByType<Player>().Dead()) {
+    if (!_player || !_player.gameObject.activeSelf ||
+        _gameData.NumEnemies <= 0) {
       return false;
     }
-    Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-
-    foreach (Enemy enemy in enemies) {
-      if (enemy.Alive()) {
+    foreach (Enemy e in FindObjectsByType<Enemy>(FindObjectsSortMode.None)) {
+      if (e.Alive()) {
         return false;
       }
     }
@@ -145,6 +144,8 @@ public class GameManager : MonoBehaviour {
 
   public void ReturnToTitleScreen() {
     _playing = false;
+    CameraController.Instance.FocalObject = null;
+    Destroy(_player.gameObject);
     SceneManager.LoadScene(0);
   }
 
@@ -159,11 +160,13 @@ public class GameManager : MonoBehaviour {
 
   private void SpawnPlayer() {
     if (_player) {
+      CameraController.Instance.FocalObject = null;
       Destroy(_player.gameObject);
     }
     _player = SpawnVehicle(_gameData.PlayerVehicleType);
     _player.gameObject.AddComponent<Player>();
     DontDestroyOnLoad(_player);
+    CameraController.Instance.FocalObject = _player;
   }
 
   private void SpawnEnemies() {

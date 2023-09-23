@@ -4,12 +4,6 @@ using UnityEngine;
 public class Enemy : GameCharacter {
   protected List<Vehicle> _potentialTargets;
   protected Vehicle _target;
-  protected Camera _camera;
-
-  protected override void Start() {
-    _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
-    base.Start();
-  }
 
   public void SetPotentialTargets(Vehicle[] vehicles) {
     _potentialTargets = new();
@@ -30,7 +24,6 @@ public class Enemy : GameCharacter {
       _vehicle.Move(0, 0);
       FindNewTarget();
     }
-    _vehicle.SetHealthBarRotation(_camera.transform.rotation);
   }
 
   public virtual void FindNewTarget() {

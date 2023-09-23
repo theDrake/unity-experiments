@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 5945375185855871103}
   - component: {fileID: 7572985840200727231}
   m_Layer: 5
-  m_Name: Vehicle Canvas
+  m_Name: VehicleCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
