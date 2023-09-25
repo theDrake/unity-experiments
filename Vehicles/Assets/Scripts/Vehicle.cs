@@ -20,17 +20,21 @@ public class Vehicle : MonoBehaviour {
     public bool ProvidesSteering;
   }
 
+  protected const float _maxMotorTorque = 1500.0f;
+  protected const float _maxSteeringAngle = 45.0f;
+  protected const float _envDamageMultiplier = -1000.0f;
+
   public VehicleType Type;
   public Vector3 FirstPersonCameraOffset { get; protected set; }
   public float Health { get; protected set; }
+  public bool IsPlayer { get; private set; }
 
   [SerializeField] protected List<Axle> _axleList;
   [SerializeField] protected ParticleSystem _explosion;
   protected Rigidbody _rigidBody;
   protected Slider _healthBar;
-  protected float _maxMotorTorque = 1500.0f;
-  protected float _maxSteeringAngle = 45.0f;
   protected float _maxHealth;
+  protected bool _dead = false;
 
   protected virtual void Awake() {
     _rigidBody = GetComponent<Rigidbody>();
@@ -43,11 +47,18 @@ public class Vehicle : MonoBehaviour {
                                   _healthBar.transform.localPosition.z);
   }
 
+  protected virtual void Start() {
+    if (GetComponent<Player>()) {
+      IsPlayer = true;
+    }
+  }
+
   protected virtual void FixedUpdate() {
     if (GameManager.Instance.OutOfBounds(transform.position)) {
       _rigidBody.Sleep();
       transform.position = Vector3.Lerp(transform.position,
                                         GameManager.Instance.Center, 0.0001f);
+      UpdateHealth(Time.deltaTime * _envDamageMultiplier);
     }
   }
 
@@ -87,6 +98,12 @@ public class Vehicle : MonoBehaviour {
   }
 
   protected virtual void OnCollisionEnter(Collision c) {
+    if (_dead) {
+      return;
+    }
+    if (IsPlayer) {
+      CarnageCanvas.Score += (int) c.impulse.magnitude / 100;
+    }
     UpdateHealth(-c.impulse.magnitude);
   }
 
@@ -98,6 +115,9 @@ public class Vehicle : MonoBehaviour {
   }
 
   protected virtual void UpdateHealth(float adjustment=0) {
+    if (_dead) {
+      return;
+    }
     Health += adjustment;
     if (Health > 0) {
       _healthBar.value = Health / _maxHealth;
@@ -107,14 +127,18 @@ public class Vehicle : MonoBehaviour {
   }
 
   protected virtual void Explode() {
-    if (GetComponent<Player>()) {
+    if (_dead) {
+      return;
+    }
+    _dead = true;
+    Instantiate<ParticleSystem>(_explosion, transform.position,
+                                transform.rotation);
+    if (IsPlayer) {
       CarnageCanvas.ShowGameOver();
       CameraController.Instance.FocalObject = null;
     } else {
       CarnageCanvas.UpdateNumEnemies(-1);
     }
-    Instantiate<ParticleSystem>(_explosion, transform.position,
-                                transform.rotation);
     gameObject.SetActive(false);
   }
 }

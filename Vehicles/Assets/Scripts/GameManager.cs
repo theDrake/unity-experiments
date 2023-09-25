@@ -63,24 +63,16 @@ public class GameManager : MonoBehaviour {
 
   public void StartGame() {
     SaveData();
+    foreach (Enemy e in FindObjectsByType<Enemy>(FindObjectsSortMode.None)) {
+      Destroy(e.gameObject);
+    }
+    foreach (GameObject o in GameObject.FindGameObjectsWithTag("Obstacle")) {
+      Destroy(o);
+    }
     SpawnPlayer();
     SceneManager.LoadScene(1);
     _spawnCountdown = _spawnDelay;
     _playing = true;
-  }
-
-  public bool Victorious() {
-    if (!_player || !_player.gameObject.activeSelf ||
-        _gameData.NumEnemies <= 0) {
-      return false;
-    }
-    foreach (Enemy e in FindObjectsByType<Enemy>(FindObjectsSortMode.None)) {
-      if (e.Alive()) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   public bool OutOfBounds(Vector3 point) {
@@ -173,10 +165,6 @@ public class GameManager : MonoBehaviour {
     Vehicle[] vehicles;
 
     CarnageCanvas.UpdateNumEnemies(_gameData.NumEnemies);
-    foreach (Enemy enemy in
-             FindObjectsByType<Enemy>(FindObjectsSortMode.None)) {
-      Destroy(enemy.gameObject);
-    }
     for (int i = 0; i < _gameData.NumEnemies; ++i) {
       SpawnEnemy();
     }
@@ -212,11 +200,6 @@ public class GameManager : MonoBehaviour {
   }
 
   private void SpawnObstacles() {
-    GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-
-    foreach (GameObject obstacle in obstacles) {
-      Destroy(obstacle);
-    }
     for (int i = 0; i < _gameData.NumObstacles; ++i) {
       int type = Random.Range(0, _obstaclePrefabs.Length);
       GameObject obj = Instantiate<GameObject>(_obstaclePrefabs[type]);

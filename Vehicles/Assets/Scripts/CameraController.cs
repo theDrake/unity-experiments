@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour {
   private static readonly Vector3 _3rdPersonOffsetMin = new(0, 7.0f, -12.0f);
   private static readonly Vector3 _3rdPersonOffsetIncrement = new(0, 0, -4.0f);
   private const float _3rdPersonMaxDistance = 50.0f;
-  private const float _rotationSpeed = 200.0f;
+  private const float _rotationSpeed = 180.0f;
 
   private Camera _camera;
   private Vehicle _focalObject;
@@ -52,10 +52,10 @@ public class CameraController : MonoBehaviour {
       //   transform.Rotate(Vector3.right, _rotationSpeed * Time.deltaTime);
       // }
       if (Input.GetKey(KeyCode.LeftArrow)) {
-        transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime);
+        transform.Rotate(Vector3.down, _rotationSpeed * Time.deltaTime);
       }
       if (Input.GetKey(KeyCode.RightArrow)) {
-        transform.Rotate(Vector3.down, _rotationSpeed * Time.deltaTime);
+        transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime);
       }
       transform.Rotate(Vector3.up,
           Input.GetAxis("Mouse X") * _rotationSpeed * Time.deltaTime);

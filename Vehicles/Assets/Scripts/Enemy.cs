@@ -8,14 +8,14 @@ public class Enemy : GameCharacter {
   public void SetPotentialTargets(Vehicle[] vehicles) {
     _potentialTargets = new();
     foreach (Vehicle v in vehicles) {
-      if (v != _vehicle) {
+      if (v.gameObject != _vehicle.gameObject) {
         _potentialTargets.Add(v);
       }
     }
   }
 
   protected virtual void FixedUpdate() {
-    if (Dead()) {
+    if (!Alive()) {
       return;
     } else if (_target && _target.gameObject.activeSelf &&
                Random.Range(0, 500) > 0) {

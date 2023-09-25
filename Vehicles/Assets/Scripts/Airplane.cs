@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class Airplane : Vehicle {
-  protected const float _yMin = 1.0f;
+  protected const float _yMin = 2.5f;
 
   [SerializeField] protected Transform _propeller;
   protected float _forwardSpeed = 28.0f;
@@ -13,8 +13,9 @@ public class Airplane : Vehicle {
   }
 
   public override void Move(float verticalInput, float horizontalInput) {
-    if (transform.position.y > _yMin &&
-        !GameManager.Instance.OutOfBounds(transform.position)) {
+    if (transform.position.y < _yMin) {
+      UpdateHealth(Time.deltaTime * _envDamageMultiplier);
+    } else if (!GameManager.Instance.OutOfBounds(transform.position)) {
       transform.Translate(_forwardSpeed * Time.deltaTime * Vector3.forward);
     }
     transform.Rotate(_rotationSpeed * verticalInput * Time.deltaTime *
