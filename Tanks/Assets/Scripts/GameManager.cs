@@ -5,28 +5,29 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
-  public CameraControl CameraControl;
-  public Text MessageText;
-  public GameObject TankPrefab;
-  public const int MaxTanks = 8;
-
-  private MainMenu _menu;
   private readonly static List<Tank> _tanks = new();
   private readonly List<Destructible> _destructibles = new();
   private readonly List<Transform> _spawnPoints = new();
   private readonly List<Color> _teamColors = new();
   private const float _startDelay = 1.0f;
   private const float _endDelay = 3.0f;
-  private WaitForSeconds _startWait;
-  private WaitForSeconds _endWait;
   private readonly int[] _wins = new int[MaxTanks];
+  public const int MaxTanks = 8;
   private const int _roundsToWin = 3;
-  private int _roundWinner;
-  private int _gameWinner;
-  private int _round;
   private static int _numTeams = 2;
   private static int _numTanksPerTeam = 4;
   private static int _numTanks;
+
+  public CameraControl CameraControl;
+  public Text MessageText;
+  public GameObject TankPrefab;
+
+  private MainMenu _menu;
+  private WaitForSeconds _startWait;
+  private WaitForSeconds _endWait;
+  private int _roundWinner;
+  private int _gameWinner;
+  private int _round;
 
   private void Start() {
     foreach (GameObject o in GameObject.FindGameObjectsWithTag("SpawnPoint")) {

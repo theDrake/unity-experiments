@@ -3,17 +3,25 @@ using UnityEngine.UI;
 
 [System.Serializable]
 public class Tank : MonoBehaviour {
-  [HideInInspector] public Color TankColor {
-    get { return _color; }
-    set {
-      _color = value;
-      foreach (MeshRenderer r in GetComponentsInChildren<MeshRenderer>()) {
-        r.material.color = _color;
-      }
-    }
-  }
-  [HideInInspector] public int TankNum;
-  [HideInInspector] public int TeamNum;
+  private readonly Color _fullHealthColor = Color.green;
+  private readonly Color _zeroHealthColor = Color.red;
+  private const float _startingHealth = 100.0f;
+  private const float _speed = 12.0f;
+  private const float _turnSpeed = 180.0f;
+  private const float _minLaunchForce = 15.0f;
+  private const float _maxLaunchForce = 30.0f;
+  private const float _maxChargeTime = 0.75f;
+  private const float _chargeSpeed = (_maxLaunchForce - _minLaunchForce) /
+      _maxChargeTime;
+  private const float _fireDelay = 0.5f; // seconds
+  private const float _pitchRange = 0.2f; // for audio variation
+  private const float _maxFireAngle = 0.16f; // for NPC behavior
+  private const float _maxFireDistanceFar = 18.0f; // for NPC behavior
+  private const float _minFireDistanceFar = 8.0f; // for NPC behavior
+  private const float _maxFireDistanceClose = 3.0f; // for NPC behavior
+  private const float _minRetreatDistance = 6.0f; // for NPC behavior
+  private const int _playerTankNum = 1;
+
   public GameObject ExplosionPrefab;
   public Rigidbody Shell;
   public Transform FireTransform;
@@ -26,26 +34,25 @@ public class Tank : MonoBehaviour {
   public AudioClip EngineDriving;
   public AudioClip ChargingClip;
   public AudioClip FireClip;
+  [HideInInspector] public Color TankColor {
+    get { return _color; }
+    set {
+      _color = value;
+      foreach (MeshRenderer r in GetComponentsInChildren<MeshRenderer>()) {
+        r.material.color = _color;
+      }
+    }
+  }
+  [HideInInspector] public int TankNum;
+  [HideInInspector] public int TeamNum;
 
   private Rigidbody _rb;
   private ParticleSystem _explosion;
   private GameObject _canvas;
   private AudioSource _explosionAudio;
   private Color _color;
-  private readonly Color _fullHealthColor = Color.green;
-  private readonly Color _zeroHealthColor = Color.red;
   private Vector3 _startingPosition;
   private Quaternion _startingRotation;
-  private const float _startingHealth = 100.0f;
-  private const float _speed = 12.0f;
-  private const float _turnSpeed = 180.0f;
-  private const float _minLaunchForce = 15.0f;
-  private const float _maxLaunchForce = 30.0f;
-  private const float _maxChargeTime = 0.75f;
-  private const float _chargeSpeed = (_maxLaunchForce - _minLaunchForce) /
-      _maxChargeTime;
-  private const float _fireDelay = 0.5f; // seconds
-  private const float _pitchRange = 0.2f; // for audio variation
   private float _engineIdlingPitch;
   private float _engineDrivingPitch;
   private float _movementInput;
@@ -56,15 +63,7 @@ public class Tank : MonoBehaviour {
   private bool _controlEnabled;
   private bool _fired;
   private bool _dead;
-  private const int _playerTankNum = 1;
-
-  // NPC variables
-  private Tank _target;
-  private const float _maxFireAngle = 0.16f;
-  private const float _maxFireDistanceFar = 18.0f;
-  private const float _minFireDistanceFar = 8.0f;
-  private const float _maxFireDistanceClose = 3.0f;
-  private const float _minRetreatDistance = 6.0f;
+  private Tank _target; // for NPC behavior
 
   private void Awake() {
     _rb = GetComponent<Rigidbody>();
@@ -176,7 +175,7 @@ public class Tank : MonoBehaviour {
   }
 
   private void HandleNpcBehavior() {
-    if (!_target || _target._dead) {
+    if (!_target || _target._dead || Random.Range(0, 500) == 0) {
       _target = GameManager.FindTargetForTank(TankNum);
     } else {
       float distance = Vector3.Distance(transform.position,

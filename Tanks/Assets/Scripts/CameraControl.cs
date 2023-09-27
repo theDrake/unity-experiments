@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 
 public class CameraControl : MonoBehaviour {
-  [HideInInspector]
-  public Transform[] Targets;
-
-  private Camera _camera;
   private const float _dampTime = 0.2f;
   private const float _screenEdgeBuffer = 4.0f;
   private const float _minSize = 6.5f;
-  private float _zoomSpeed;
+
+  [HideInInspector] public Transform[] Targets;
+
+  private Camera _camera;
   private Vector3 _moveVelocity;
   private Vector3 _desiredPosition;
+  private float _zoomSpeed;
 
   private void Awake() {
     _camera = GetComponentInChildren<Camera>();

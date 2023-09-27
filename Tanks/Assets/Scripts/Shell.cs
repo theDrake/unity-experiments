@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 
 public class Shell : MonoBehaviour {
-  public LayerMask ExplosionMask;
-  public ParticleSystem ExplosionParticles;
-  public AudioSource ExplosionAudio;
-
   private const float _maxLifetime = 2.0f;
   private const float _maxDamage = 100.0f;
   private const float _explosionForce = 1000.0f;
   private const float _explosionRadius = 5.0f;
+
+  public LayerMask ExplosionMask;
+  public ParticleSystem ExplosionParticles;
+  public AudioSource ExplosionAudio;
 
   private void Start() {
     Destroy(gameObject, _maxLifetime);
