@@ -1,50 +1,51 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class Player : MovingObject {
-  public int attackPower = 1;
-  public int hpPerFood = 10;
-  public int hpPerSoda = 20;
-  public float restartLevelDelay = 1.0f;
-  public Text hpText;
-  public AudioClip moveSound1, moveSound2, eatSound1, eatSound2, drinkSound1,
-    drinkSound2, gameOverSound;
+public class Player : GameCharacter {
+  private const int _maxHp = 100;
+  private const int _hpPerFood = 10;
+  private const int _hpPerSoda = 20;
 
-  private Animator animator;
-  private int hp;
+  [SerializeField] private Text _hpText;
+  [SerializeField] private AudioClip _moveSound1;
+  [SerializeField] private AudioClip _moveSound2;
+  [SerializeField] private AudioClip _eatSound1;
+  [SerializeField] private AudioClip _eatSound2;
+  [SerializeField] private AudioClip _drinkSound1;
+  [SerializeField] private AudioClip _drinkSound2;
+  [SerializeField] private AudioClip _gameOverSound;
+  private int _hp;
 
 #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_PHONE
-  private Vector2 touchOrigin = -Vector2.one;
+  private Vector2 _touchOrigin = -Vector2.one;
 #endif
 
+  private void Awake() {
+    _animator = GetComponent<Animator>();
+    _hp = _maxHp;
+  }
+
   protected override void Start() {
-    animator = GetComponent<Animator>();
-    hp = GameManager.instance.playerHp;
-    hpText.text = "HP: " + hp;
+    _hpText.text = "HP: " + _hp;
     base.Start();
   }
 
-  private void OnDisable() {
-    GameManager.instance.playerHp = hp;
-  }
-
   private void Update() {
-    if (GameManager.instance.playersTurn) {
-      int horizontal = 0;
-      int vertical = 0;
+    if (GameManager.Instance.PlayersTurn) {
+      int horizontal = 0, vertical = 0;
+
 #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_PHONE
       if (Input.touchCount > 0) {
         Touch myTouch = Input.touches[0];
         if (myTouch.phase == TouchPhase.Began) {
-          touchOrigin = myTouch.position;
-        } else if (myTouch.phase == TouchPhase.Ended && touchOrigin.x >= 0) {
+          _touchOrigin = myTouch.position;
+        } else if (myTouch.phase == TouchPhase.Ended && _touchOrigin.x >= 0) {
           Vector2 touchEnd = myTouch.position;
-          float x = touchEnd.x - touchOrigin.x;
-          float y = touchEnd.y - touchOrigin.y;
-          touchOrigin.x = -1; // ensure "else if" above is false next time
+          float x = touchEnd.x - _touchOrigin.x;
+          float y = touchEnd.y - _touchOrigin.y;
+
+          _touchOrigin.x = -1; // ensure "else if" above is false next time
           if (Mathf.Abs(x) > Mathf.Abs(y)) {
             horizontal = x > 0 ? 1 : -1;
           } else {
@@ -60,64 +61,57 @@ public class Player : MovingObject {
       }
 #endif
       if (horizontal != 0 || vertical != 0) {
-        AttemptMove<Wall>(horizontal, vertical);
+        MoveOrAttack<Wall>(horizontal, vertical);
       }
     }
   }
 
-  protected override void AttemptMove<T>(int xDir, int yDir) {
-    hp--;
-    hpText.text = "HP: " + hp;
-    base.AttemptMove<T>(xDir, yDir);
-    RaycastHit2D hit;
-    if (Move(xDir, yDir, out hit)) {
-      SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
+  public void TakeDamage(int damage) {
+    _animator.SetTrigger("playerDamaged");
+    _hp -= damage;
+    _hpText.text = "-" + damage + " HP: " + _hp;
+    CheckForGameOver();
+  }
+
+  protected override void MoveOrAttack<T>(int x, int y) {
+    _hpText.text = "HP: " + --_hp;
+    base.MoveOrAttack<T>(x, y);
+    if (Move(x, y, out RaycastHit2D hit)) {
+      SoundManager.Instance.PlayRandomClip(_moveSound1, _moveSound2);
     }
     CheckForGameOver();
-    GameManager.instance.playersTurn = false;
+    GameManager.Instance.PlayersTurn = false;
+  }
+
+  protected override void Attack<T>(T component) {
+    Wall wall = component as Wall;
+
+    wall.DamageWall(_attackPower);
+    _animator.SetTrigger("playerAttack");
   }
 
   private void OnTriggerEnter2D(Collider2D other) {
-    if (other.tag == "Exit") {
-      Invoke("Restart", restartLevelDelay);
-      enabled = false;
-    } else if (other.tag == "Food") {
-      hp += hpPerFood;
-      hpText.text = "+" + hpPerFood + " HP: " + hp;
-      SoundManager.instance.RandomizeSfx(eatSound1, eatSound2);
-      other.gameObject.SetActive(false);
-    } else if (other.tag == "Soda") {
-      hp += hpPerSoda;
-      hpText.text = "+" + hpPerSoda + " HP: " + hp;
-      SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
-      other.gameObject.SetActive(false);
+    if (other.CompareTag("Exit")) {
+      GameManager.Instance.LoadNextLevel();
+    } else if (other.CompareTag("Food")) {
+      _hp += _hpPerFood;
+      _hpText.text = "+" + _hpPerFood + " HP: " + _hp;
+      SoundManager.Instance.PlayRandomClip(_eatSound1, _eatSound2);
+      Destroy(other.gameObject);
+    } else if (other.CompareTag("Soda")) {
+      _hp += _hpPerSoda;
+      _hpText.text = "+" + _hpPerSoda + " HP: " + _hp;
+      SoundManager.Instance.PlayRandomClip(_drinkSound1, _drinkSound2);
+      Destroy(other.gameObject);
     }
   }
 
-  protected override void OnCantMove<T>(T component) {
-    Wall wall = component as Wall;
-    wall.DamageWall(attackPower);
-    animator.SetTrigger("playerAttack");
-  }
-
-  private void Restart() {
-    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex,
-                           LoadSceneMode.Single);
-  }
-
-  public void TakeDamage(int damage) {
-    animator.SetTrigger("playerDamaged");
-    hp -= damage;
-    hpText.text = "-" + damage + " HP: " + hp;
-    CheckForGameOver();
-  }
-
   private void CheckForGameOver() {
-    if (hp <= 0) {
+    if (_hp <= 0) {
       gameObject.SetActive(false);
-      SoundManager.instance.musicSource.Stop();
-      SoundManager.instance.PlaySingle(gameOverSound);
-      GameManager.instance.GameOver();
+      SoundManager.Instance.MusicSource.Stop();
+      SoundManager.Instance.PlayClip(_gameOverSound);
+      GameManager.Instance.GameOver();
     }
   }
 }

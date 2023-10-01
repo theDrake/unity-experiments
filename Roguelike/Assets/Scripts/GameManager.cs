@@ -1,94 +1,82 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.Collections;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
-  public static GameManager instance = null;
-  public float levelStartDelay = 2.0f;
-  public float turnDelay = 0.1f;
-  public int playerHp = 100;
-  [HideInInspector] public bool playersTurn = true;
+  public static GameManager Instance { get; private set; }
 
-  private bool initializing = true;
-  private int level = 1;
-  private Text levelText;
-  private GameObject levelImage;
-  private LevelManager levelManager;
-  private List<Enemy> enemies;
-  private bool enemiesMoving;
+  private const float _levelStartDelay = 1.5f;
+  private const float _turnDelay = 0.1f;
 
-  void Awake() {
-    if (instance == null) {
-      instance = this;
-    } else if (instance != this) {
+  [HideInInspector] public bool PlayersTurn;
+
+  private LevelManager _levelManager;
+  private Text _levelText;
+  private GameObject _levelImage;
+  private List<Enemy> _enemies;
+  private int _level;
+  private bool _enemiesMoving;
+
+  private void Awake() {
+    if (!Instance) {
+      Instance = this;
+      DontDestroyOnLoad(gameObject);
+      _enemies = new List<Enemy>();
+      _levelManager = GetComponent<LevelManager>();
+      _levelImage = GameObject.Find("LevelImage");
+      _levelText = GameObject.Find("LevelText").GetComponent<Text>();
+      LoadNextLevel();
+    } else {
       Destroy(gameObject);
     }
-    DontDestroyOnLoad(gameObject);
-    enemies = new List<Enemy>();
-    levelManager = GetComponent<LevelManager>();
-    InitializeGame();
   }
 
-  [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-  static public void CallbackInitialization() {
-      SceneManager.sceneLoaded += OnSceneLoaded;
-  }
-
-  static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1) {
-      instance.level++;
-      instance.InitializeGame();
-  }
-
-  void InitializeGame() {
-    initializing = true; // prevents player from moving
-    levelImage = GameObject.Find("LevelImage");
-    levelText = GameObject.Find("LevelText").GetComponent<Text>();
-    levelText.text = "Day " + level;
-    levelImage.SetActive(true);
-    Invoke("HideLevelImage", levelStartDelay);
-    enemies.Clear();
-    levelManager.InitializeLevel(level);
-  }
-
-  void HideLevelImage() {
-    levelImage.SetActive(false);
-    initializing = false; // player may now move
-  }
-
-  void Update() {
-    if (!playersTurn && !enemiesMoving && !initializing) {
+  private void Update() {
+    if (!PlayersTurn && !_enemiesMoving) {
       StartCoroutine(MoveEnemies());
     }
   }
 
-  public void AddEnemy(Enemy enemy) {
-    enemies.Add(enemy);
+  public void LoadNextLevel() {
+    PlayersTurn = true;
+    _levelText.text = "Day " + ++_level;
+    _levelImage.SetActive(true);
+    Invoke(nameof(HideLevelImage), _levelStartDelay);
+    _enemies.Clear();
+    _levelManager.InitializeLevel(_level);
   }
 
   public void GameOver() {
-    levelText.text = "After " + level + " day";
-    if (level > 1) {
-      levelText.text += "s";
+    _levelText.text = "After " + _level + " day";
+    if (_level > 1) {
+      _levelText.text += "s";
     }
-    levelText.text += ", you have fallen.";
-    levelImage.SetActive(true);
+    _levelText.text += ", you have fallen.";
+    _levelImage.SetActive(true);
     enabled = false;
   }
 
-  IEnumerator MoveEnemies() {
-    enemiesMoving = true;
-    yield return new WaitForSeconds(turnDelay);
-    if (enemies.Count == 0) {
-      yield return new WaitForSeconds(turnDelay);
+  public void AddEnemy(Enemy enemy) {
+    _enemies.Add(enemy);
+  }
+
+  private void HideLevelImage() {
+    _levelImage.SetActive(false);
+  }
+
+  private IEnumerator MoveEnemies() {
+    _enemiesMoving = true;
+    yield return new WaitForSeconds(_turnDelay);
+    if (_enemies.Count == 0) {
+      yield return new WaitForSeconds(_turnDelay);
     }
-    for (int i = 0; i < enemies.Count; ++i) {
-      enemies[i].Move();
-      yield return new WaitForSeconds(enemies[i].moveTime);
+    for (int i = 0; i < _enemies.Count; ++i) {
+      _enemies[i].SeekTarget();
+      yield return new WaitForSeconds(GameCharacter.MoveDuration);
     }
-    playersTurn = true;
-    enemiesMoving = false;
+    PlayersTurn = true;
+    _enemiesMoving = false;
   }
 }

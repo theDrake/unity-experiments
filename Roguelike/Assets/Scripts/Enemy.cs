@@ -1,47 +1,43 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Enemy : MovingObject {
-  public int attackPower;
-  public AudioClip attackSound1, attackSound2;
-
-  private Animator animator;
-  private Transform target;
-  private bool skipMove;
+public class Enemy : GameCharacter {
+  [SerializeField] private AudioClip _attackSound1;
+  [SerializeField] private AudioClip _attackSound2;
+  private Transform _target;
+  private bool _skipMove;
 
   protected override void Start() {
-    GameManager.instance.AddEnemy(this);
-    animator = GetComponent<Animator>();
-    target = GameObject.FindGameObjectWithTag("Player").transform;
+    GameManager.Instance.AddEnemy(this);
+    _animator = GetComponent<Animator>();
+    _target = GameObject.FindWithTag("Player").transform;
     base.Start();
   }
 
-  protected override void AttemptMove<T>(int xDir, int yDir) {
-    if (skipMove) {
-      skipMove = false;
+  public void SeekTarget() {
+    int x = 0, y = 0;
+
+    if (Mathf.Abs(_target.position.x - transform.position.x) < float.Epsilon) {
+      y = _target.position.y > transform.position.y ? 1 : -1;
     } else {
-      base.AttemptMove<T>(xDir, yDir);
-      skipMove = true;
+      x = _target.position.x > transform.position.x ? 1 : -1;
+    }
+    MoveOrAttack<Player>(x, y);
+  }
+
+  protected override void MoveOrAttack<T>(int x, int y) {
+    if (_skipMove) {
+      _skipMove = false;
+    } else {
+      base.MoveOrAttack<T>(x, y);
+      _skipMove = true;
     }
   }
 
-  public void Move() {
-    int xDir = 0;
-    int yDir = 0;
-
-    if (Mathf.Abs(target.position.x - transform.position.x) < float.Epsilon) {
-      yDir = (target.position.y > transform.position.y) ? 1 : -1;
-    } else {
-      xDir = (target.position.x > transform.position.x) ? 1 : -1;
-    }
-    AttemptMove<Player>(xDir, yDir);
-  }
-
-  protected override void OnCantMove<T>(T component) {
+  protected override void Attack<T>(T component) {
     Player player = component as Player;
-    animator.SetTrigger("enemyAttack");
-    SoundManager.instance.RandomizeSfx(attackSound1, attackSound2);
-    player.TakeDamage(attackPower);
+
+    _animator.SetTrigger("enemyAttack");
+    SoundManager.Instance.PlayRandomClip(_attackSound1, _attackSound2);
+    player.TakeDamage(_attackPower);
   }
 }
