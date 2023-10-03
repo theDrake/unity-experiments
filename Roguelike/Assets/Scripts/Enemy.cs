@@ -16,21 +16,21 @@ public class Enemy : GameCharacter {
   public void SeekTarget() {
     int x = 0, y = 0;
 
+    if (_skipMove) {
+      _skipMove = false;
+
+      return;
+    }
     if (Mathf.Abs(_target.position.x - transform.position.x) < float.Epsilon) {
       y = _target.position.y > transform.position.y ? 1 : -1;
     } else {
       x = _target.position.x > transform.position.x ? 1 : -1;
     }
-    MoveOrAttack<Player>(x, y);
-  }
-
-  protected override void MoveOrAttack<T>(int x, int y) {
-    if (_skipMove) {
-      _skipMove = false;
-    } else {
-      base.MoveOrAttack<T>(x, y);
-      _skipMove = true;
+    if (!MoveOrAttack<Player>(x, y) && y == 0) {
+      MoveOrAttack<Player>(0,
+                           _target.position.y > transform.position.y ? 1 : -1);
     }
+    _skipMove = true;
   }
 
   protected override void Attack<T>(T component) {

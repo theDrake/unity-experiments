@@ -27,7 +27,7 @@ public class LevelManager : MonoBehaviour {
   private Transform _levelTransform;
 
   public void InitializeLevel(int level) {
-    int numEnemies = (int) Mathf.Log(level, 2.0f);
+    int numEnemies = (int) Mathf.Log(level, 2.0f) + 1;
 
     DestroyAllWithTag("Enemy", "Food", "Soda", "Floor", "Exit", "Wall",
                       "OuterWall");

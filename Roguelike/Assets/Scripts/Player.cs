@@ -73,14 +73,25 @@ public class Player : GameCharacter {
     CheckForGameOver();
   }
 
-  protected override void MoveOrAttack<T>(int x, int y) {
-    _hpText.text = "HP: " + --_hp;
-    base.MoveOrAttack<T>(x, y);
-    if (Move(x, y, out RaycastHit2D hit)) {
+  protected override bool Move(int x, int y, out RaycastHit2D hit) {
+    if (base.Move(x, y, out hit)) {
       SoundManager.Instance.PlayRandomClip(_moveSound1, _moveSound2);
+
+      return true;
     }
+
+    return false;
+  }
+
+  protected override bool MoveOrAttack<T>(int x, int y) {
+    bool movedOrAttacked;
+
+    _hpText.text = "HP: " + --_hp;
+    movedOrAttacked = base.MoveOrAttack<T>(x, y);
     CheckForGameOver();
     GameManager.Instance.PlayersTurn = false;
+
+    return movedOrAttacked;
   }
 
   protected override void Attack<T>(T component) {

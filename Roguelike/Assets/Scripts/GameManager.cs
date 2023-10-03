@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
   public static GameManager Instance { get; private set; }
 
   private const float _levelStartDelay = 1.5f;
+  private const float _gameRestartDelay = 3.0f;
   private const float _turnDelay = 0.1f;
 
   [HideInInspector] public bool PlayersTurn;
@@ -22,7 +23,6 @@ public class GameManager : MonoBehaviour {
   private void Awake() {
     if (!Instance) {
       Instance = this;
-      DontDestroyOnLoad(gameObject);
       _enemies = new List<Enemy>();
       _levelManager = GetComponent<LevelManager>();
       _levelImage = GameObject.Find("LevelImage");
@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour {
     }
     _levelText.text += ", you have fallen.";
     _levelImage.SetActive(true);
-    enabled = false;
+    Invoke(nameof(RestartGame), _gameRestartDelay);
   }
 
   public void AddEnemy(Enemy enemy) {
@@ -78,5 +78,9 @@ public class GameManager : MonoBehaviour {
     }
     PlayersTurn = true;
     _enemiesMoving = false;
+  }
+
+  private void RestartGame() {
+    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
   }
 }
