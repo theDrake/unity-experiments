@@ -3,7 +3,7 @@
 public class DestroyByTime : MonoBehaviour {
   public float lifetime;
 
-  void Start() {
+  private void Start() {
     Destroy(gameObject, lifetime);
   }
 }

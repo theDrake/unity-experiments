@@ -2,29 +2,23 @@
 using UnityEngine.EventSystems;
 
 public class FireZone : MonoBehaviour, IPointerDownHandler, IPointerUpHandler {
-  private bool touched, canFire;
-  private int pointerID;
+  public bool CanFire { get; private set; }
 
-  void Awake() {
-    touched = false;
-  }
+  private int _pointerId;
+  private bool _touched;
 
   public void OnPointerDown(PointerEventData data) {
-    if (!touched) {
-      touched = true;
-      canFire = true;
-      pointerID = data.pointerId;
+    if (!_touched) {
+      _touched = true;
+      CanFire = true;
+      _pointerId = data.pointerId;
     }
   }
 
   public void OnPointerUp(PointerEventData data) {
-    if (data.pointerId == pointerID) {
-      touched = false;
-      canFire = false;
+    if (data.pointerId == _pointerId) {
+      _touched = false;
+      CanFire = false;
     }
-  }
-
-  public bool CanFire() {
-    return canFire;
   }
 }

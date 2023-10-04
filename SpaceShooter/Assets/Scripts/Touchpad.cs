@@ -2,45 +2,38 @@
 using UnityEngine.EventSystems;
 
 public class Touchpad : MonoBehaviour, IPointerDownHandler, IDragHandler,
-    IPointerUpHandler {
-  public float smoothing;
+                        IPointerUpHandler {
+  private const float _smoothing = 0.1f;
 
-  private bool touched;
-  private int pointerID;
-  private Vector2 origin, direction, smoothDirection;
-
-  void Awake() {
-    touched = false;
-    direction = Vector2.zero;
-  }
+  private Vector2 _origin;
+  private Vector2 _direction;
+  private Vector2 _smoothDirection;
+  private int _pointerId;
+  private bool _touched;
 
   public void OnPointerDown(PointerEventData data) {
-    if (!touched) {
-      touched = true;
-      pointerID = data.pointerId;
-      origin = data.position;
+    if (!_touched) {
+      _touched = true;
+      _pointerId = data.pointerId;
+      _origin = data.position;
     }
   }
 
   public void OnDrag(PointerEventData data) {
-    if (data.pointerId == pointerID) {
-      Vector2 currentPosition = data.position,
-              directionRaw = currentPosition - origin;
-      direction = directionRaw.normalized;
+    if (data.pointerId == _pointerId) {
+      _direction = (data.position - _origin).normalized;
     }
   }
 
   public void OnPointerUp(PointerEventData data) {
-    if (data.pointerId == pointerID) {
-      direction = Vector2.zero;
-      touched = false;
+    if (data.pointerId == _pointerId) {
+      _direction = Vector2.zero;
+      _touched = false;
     }
   }
 
   public Vector2 GetDirection() {
-    smoothDirection = Vector2.MoveTowards(smoothDirection, direction,
-                                          smoothing);
-
-    return smoothDirection;
+    return _smoothDirection = Vector2.MoveTowards(_smoothDirection, _direction,
+                                                  _smoothing);
   }
 }

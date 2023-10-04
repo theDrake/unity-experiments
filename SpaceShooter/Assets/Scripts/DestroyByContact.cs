@@ -4,36 +4,28 @@ public class DestroyByContact : MonoBehaviour {
   public GameObject explosion, playerExplosion;
   public int scoreValue;
 
-  private GameController gameController;
-  private Transform thisTransform, otherTransform;
+  private GameManager _gameManager;
 
-  void Start() {
-    GameObject gameControllerObject = GameObject.FindWithTag("GameController");
-
-    thisTransform = GetComponent<Transform>();
-    if (gameControllerObject) {
-      gameController = gameControllerObject.GetComponent<GameController>();
-    }
-    if (!gameController) {
-      Debug.Log("Cannot find 'GameController' script");
-    }
+  private void Start() {
+    _gameManager = FindAnyObjectByType<GameManager>();
   }
 
-  void OnTriggerEnter(Collider other) {
+  private void OnTriggerEnter(Collider other) {
     if (other.CompareTag("Boundary") || other.CompareTag("Enemy")) {
       return;
     }
     Destroy(gameObject);
-    Destroy(other.gameObject);
-    if (explosion != null) {
-      Instantiate(explosion, thisTransform.position, thisTransform.rotation);
+    if (explosion) {
+      Instantiate(explosion, transform.position, transform.rotation);
     }
     if (other.CompareTag("Player")) {
-      otherTransform = other.GetComponent<Transform>();
-      Instantiate(playerExplosion, otherTransform.position,
-                  otherTransform.rotation);
-      gameController.GameOver();
+      other.gameObject.SetActive(false);
+      Instantiate(playerExplosion, other.transform.position,
+                  other.transform.rotation);
+      _gameManager.GameOver();
+    } else {
+      Destroy(other.gameObject);
     }
-    gameController.AddToScore(scoreValue);
+    _gameManager.AddToScore(scoreValue);
   }
 }
