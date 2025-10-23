@@ -10,7 +10,7 @@ public class Counter : MonoBehaviour {
   }
 
   private void OnTriggerExit(Collider other) {
-    if (other.GetComponent<Rigidbody>().velocity.y < 0) {
+    if (other.GetComponent<Rigidbody>().linearVelocity.y < 0) {
       ++_count;
     } else {
       --_count;

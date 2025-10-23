@@ -49,11 +49,11 @@ public class Player : MonoBehaviour {
     // Vector2 direction = touchpad.GetDirection();
     // Vector3 movement = new(direction.x, 0, direction.y);
 
-    _rb.velocity = movement * speed;
+    _rb.linearVelocity = movement * speed;
     transform.SetPositionAndRotation(new(
         Mathf.Clamp(_rb.position.x, boundary.xMin, boundary.xMax), 0,
         Mathf.Clamp(_rb.position.z, boundary.zMin, boundary.zMax)),
-        Quaternion.Euler(0, 0, _rb.velocity.x * tilt));
+        Quaternion.Euler(0, 0, _rb.linearVelocity.x * tilt));
   }
 
   // private void CalibrateAccelerometer() {

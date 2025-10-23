@@ -22,12 +22,12 @@ public class Enemy : MonoBehaviour {
   }
 
   private void FixedUpdate() {
-    _rb.velocity = new Vector3(_player.position.x - transform.position.x, 0,
+    _rb.linearVelocity = new Vector3(_player.position.x - transform.position.x, 0,
                                -1.0f) * _speed;
     transform.SetPositionAndRotation(new(
         Mathf.Clamp(transform.position.x, boundary.xMin, boundary.xMax), 0,
         Mathf.Clamp(transform.position.z, boundary.zMin, boundary.zMax)),
-        Quaternion.Euler(0, 0, _rb.velocity.x * _tilt));
+        Quaternion.Euler(0, 0, _rb.linearVelocity.x * _tilt));
   }
 
   private void Attack() {

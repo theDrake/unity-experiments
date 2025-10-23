@@ -15,7 +15,7 @@ public class Punk : MonoBehaviour {
 
   private void Update() {
     if (transform.position.y < _minY) {
-      _rb.velocity = Vector2.zero;
+      _rb.linearVelocity = Vector2.zero;
       transform.SetPositionAndRotation(new(Random.Range(_spawnMinX,
                                                         _spawnMaxX),
                                            Random.Range(_spawnMinY,
