@@ -94,7 +94,7 @@ public class Vehicle : MonoBehaviour {
   }
 
   public virtual float GetSpeed() {
-    return _rigidBody.velocity.magnitude;
+    return _rigidBody.linearVelocity.magnitude;
   }
 
   protected virtual void OnCollisionEnter(Collision c) {
